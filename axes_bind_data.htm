@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bar Chart</title>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js?1.29.1"></script>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.time.js?1.29.1"></script>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.csv.js?1.29.1"></script>
+    <style type="text/css">
+
+body {
+  font: 10px sans-serif;
+}
+
+svg {
+  shape-rendering: crispEdges;
+}
+
+</style>
+</head>
+<body>
+  <script type="text/javascript">
+
+var year = 1999;
+
+d3.csv("US_mortality_expand_small.csv", function(data) {
+	data.forEach(function(d) {
+		d.people = +d.people;
+		d.year = +d.year;		
+	});
+    dataYear = data.filter(function(d) { return d.year == year; });
+    // gender: 1 male 2 female
+    var mdata = dataYear.filter(function(d) { return d.gender == 1; });
+    var fdata = dataYear.filter(function(d) { return d.gender == 2; });
+
+    var cLayers = 26, // number of layers
+    cCauses = 5, // number of samples per layer
+    color = d3.interpolateRgb("#aad", "#556");
+
+    var ageGroup = ["0", "1", "2", "3", "4"];
+    for (var i = 5; i < 90; i += 5)
+    {
+        ageGroup.push(i + "-" + (i + 4));
+    }
+    ageGroup.push("95+");
+
+    var w = 430,
+        h = 230,
+        xRight = d3.scale.linear().domain([0, 100]).range([0, w]),
+        xLeft = d3.scale.linear().domain([0, 100]).range([w, 0]),
+        y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
+
+    
+
+    var vis = d3.select("body")
+        .append("svg:svg")
+        .attr("width", w + 40)
+        .attr("height", h + 20)
+        .append("svg:g")
+        .attr("transform", "translate(20,15)");
+
+    var bars = vis.selectAll("g.bar")
+        .data(ageGroup)
+        .enter().append("svg:g")
+        .attr("class", "bar")
+        .attr("transform", function(d, i) { return "translate(30," + y(d) + ")"; });
+
+    var ageText = vis.selectAll("text")
+        .data(ageGroup)
+        .enter().append("svg:text")
+        .attr("x", "30")
+        .attr("y", function(d) { return y(d); })
+        .attr("text-anchor", "middle")
+        .attr("dy", ".71em")
+        .text(function(d) { return d; });
+
+    var mbars = bars.append("svg:rect")
+        .data(mdata)
+        .attr("fill", "steelblue")
+        .attr("width", function(d) { return d.people;})
+        .attr("height", y.rangeBand());
+
+/*
+    bars.append("svg:text")
+        .attr("x", x)
+        .attr("y", y.rangeBand() / 2)
+        .attr("dx", -6)
+        .attr("dy", ".35em")
+        .attr("fill", "white")
+        .attr("text-anchor", "end")
+        .text(x.tickFormat(100));
+
+    bars.append("svg:text")
+        .attr("x", 0)
+        .attr("y", y.rangeBand() / 2)
+        .attr("dx", -6)
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .text(function(d, i) { return String.fromCharCode(65 + i); });
+*/
+    var rules = vis.selectAll("g.rule")
+        .data(xRight.ticks(10))
+        .enter().append("svg:g")
+        .attr("class", "rule")
+        .attr("transform", function(d) { return "translate(" + xRight(d) + ",0)"; });
+
+    rules.append("svg:line")
+        .attr("y1", h)
+        .attr("y2", h + 6)
+        .attr("stroke", "black");
+
+    rules.append("svg:line")
+        .attr("y1", 0)
+        .attr("y2", h)
+        .attr("stroke", "white")
+        .attr("stroke-opacity", .3);
+
+    rules.append("svg:text")
+        .attr("y", h + 9)
+        .attr("dy", ".71em")
+        .attr("text-anchor", "middle")
+        .text(xRight.tickFormat(10));
+
+    vis.append("svg:line")
+        .attr("y1", 0)
+        .attr("y2", h)
+        .attr("stroke", "black");
+});
+
+
+
+</script>
+</body>
+</html>
