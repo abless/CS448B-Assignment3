@@ -24,10 +24,10 @@ svg {
 var year = 1999;
 
 d3.csv("US_mortality_expand_small.csv", function(data) {
-	data.forEach(function(d) {
-		d.people = +d.people;
-		d.year = +d.year;		
-	});
+  data.forEach(function(d) {
+    d.people = +d.people;
+    d.year = +d.year;
+  });
     dataYear = data.filter(function(d) { return d.year == year; });
     // gender: 1 male 2 female
     var mdata = dataYear.filter(function(d) { return d.gender == 1; });
@@ -45,12 +45,12 @@ d3.csv("US_mortality_expand_small.csv", function(data) {
     ageGroup.push("95+");
 
     var w = 430,
-        h = 230,
+        h = 430,
         xRight = d3.scale.linear().domain([0, 100]).range([0, w]),
         xLeft = d3.scale.linear().domain([0, 100]).range([w, 0]),
         y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
 
-    
+
 
     var vis = d3.select("body")
         .append("svg:svg")
