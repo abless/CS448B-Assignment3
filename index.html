@@ -85,7 +85,6 @@ svg {
     <script type="text/javascript">
 
 function isYear(d) { return d.year == year; }
-function isAgeGroup(d, i) { console.log(d); return d.age == 5 * i}
 function linkClass(y) { return "y"+y.toFixed(0) + (y==year?" active":""); }
 function tooltipText(d) {
     return d3.format(",")(d.people)
@@ -168,6 +167,9 @@ var data = mortality,
                .sort(function(a,b) { return b.age - a.age; }),
     fdat = data.filter(function(d) { return d.sex==2; })
                .sort(function(a,b) { return b.age - a.age; });
+
+// An example of how to filter by cause
+// mdat.map(function(d) { d.stats = d.stats.filter(function(stat) { return stat.cause == "Heart"; }); return d; });
 
 var colors = {
   "Cancer": "steelblue",
