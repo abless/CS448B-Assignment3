@@ -1,0 +1,105 @@
+1000;;All causes
+1001;A00-B99;Certain infectious and parasitic diseases
+1002;A00;Cholera
+1003;A09;Diarrhoea and gastroenteritis of presumed infectious origin
+1004;A01-A08;Other intestinal infectious diseases
+1005;A15-A16;Respiratory tuberculosis
+1006;A17-A19;Other tuberculosis
+1007;A20;Plague
+1008;A33-A35;Tetanus
+1009;A36;Diphtheria
+1010;A37;Whooping cough
+1011;A39;Meningococcal infection
+1012;A40-A41;Septicaemia
+1013;A50-A64;Infections with a predominantly sexual mode of transmission
+1014;A80;Acute poliomyelitis
+1015;A82;Rabies
+1016;A95;Yellow fever
+1017;A90-A94, A96-A99;Other arthropod-borne viral fevers and viral haemorrhagic fevers
+1018;B05;Measles
+1019;B15-B19;Viral hepatitis
+1020;B20-B24;Human immunodeficiency virus [HIV] disease
+1021;B50-B54;Malaria
+1022;B55;Leishmaniasis
+1023;B56-B57;Trypanosomiasis
+1024;B65;Schistosomiasis
+1025;A21-A32, A38, A42-A49, A65-A79, A81, A83-A89, B00-B04, B06-B09, B25-B49, B58-B64, B66-B94, B99;Remainder of certain infectious and parasitic diseases
+1026;C00-D48;Neoplasms
+1027;C00-C14;Malignant neoplasm of lip, oral cavity and pharynx
+1028;C15;Malignant neoplasm of oesophagus
+1029;C16;Malignant neoplasm of stomach
+1030;C18-C21;Malignant neoplasm of colon, rectum and anus
+1031;C22;Malignant neoplasm of liver and intrahepatic bile ducts
+1032;C25;Malignant neoplasm of pancreas
+1033;C32;Malignant neoplasm of larynx
+1034;C33-C34;Malignant neoplasm of trachea, bronchus and lung
+1035;C43;Malignant melanoma of skin
+1036;C50;Malignant neoplasm of breast
+1037;C53;Malignant neoplasm of cervix uteri
+1038;C54-C55;Malignant neoplasm of other and unspecified parts of uterus
+1039;C56;Malignant neoplasm of ovary
+1040;C61;Malignant neoplasm of prostate
+1041;C67;Malignant neoplasm of bladder
+1042;C70-C72;Malignant neoplasm of meninges, brain and other parts of central nervous system
+1043;C82-C85;Non-Hodgkin's lymphoma
+1044;C90;Multiple myeloma and malignant plasma cell neoplasms
+1045;C91-C95;Leukaemia
+1046;C17, C23-C24, C26-C31, C37-C41, C44-C49, C51-C52, C57-C60, C62-C66,C68-C69,C73-C81,C88,C96-C97;Remainder of malignant neoplasms
+1047;D00-D48;Remainder of neoplasms 
+1048;D50-D89;Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism
+1049;D50-D64;Anaemias
+1050;D65-D89;Remainder of diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism
+1051;E00-E88;Endocrine, nutritional and metabolic diseases
+1052;E10-E14;Diabetes mellitus
+1053;E40-E46;Malnutrition
+1054;E00-E07, E15-E34, E50-E88;Remainder of endocrine, nutritional and metabolic diseases
+1055;F01-F99;Mental and behavioural disorders
+1056;F10-F19;Mental and behavioural disorders due to psychoactive substance use
+1057;F20-F99;Remainder of mental and behavioural disorders
+1058;G00-G98;Diseases of the nervous system
+1059;G00, G03;Meningitis
+1060;G30;Alzheimer's disease
+1061;G04-G25, G31-G98;Remainder of diseases of the nervous system
+1062;H00-H57;Diseases of the eye and adnexa
+1063;H60-H93;Diseases of the ear and mastoid process
+1064;I00-I99;Diseases of the circulatory system
+1065;I00-I09;Acute rheumatic fever and chronic rheumatic heart diseases
+1066;I10-I13;Hypertensive diseases
+1067;I20-I25;Ischaemic heart diseases
+1068;I26-I51;Other heart diseases
+1069;I60-I69;Cerebrovascular diseases
+1070;I70;Atherosclerosis
+1071;I71-I99;Remainder of diseases of the circulatory system
+1072;J00-J98;Diseases of the respiratory system
+1073;J10-J11;Influenza
+1074;J12-J18;Pneumonia
+1075;J20-J22;Other acute lower respiratory infections
+1076;J40-J47;Chronic lower respiratory diseases
+1077;J00-J06, J30-J39, J60-J98;Remainder of diseases of the respiratory system
+1078;K00-K92;Diseases of the digestive system
+1079;K25-K27;Gastric and duodenal ulcer
+1080;K70-K76;Diseases of the liver
+1081;K00-K22, K28-K66, K80-K92;Remainder of diseases of the digestive system
+1082;L00-L98;Diseases of the skin and subcutaneous tissue
+1083;M00-M99;Diseases of the musculoskeletal system and connective tissue
+1084;N00-N98;Diseases of the genitourinary system
+1085;N00-N15;Glomerular and renal tubulo-interstitial diseases
+1086;N17-N98;Remainder of diseases of the genitourinary system
+1087;O00-O99;Pregnancy, childbirth and the puerperium
+1088;O00-O07;Pregnancy with abortive outcome
+1089;O10-O92;Other direct obstetric deaths
+1090;O98-O99;Indirect obstetric deaths
+1091;O95-O97;Remainder of pregnancy, childbirth and the puerperium
+1092;P00-P96;Certain conditions originating in the perinatal period
+1093;Q00-Q99;Congenital malformations, deformations and chromosomal abnormalities
+1094;R00-R99;Symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified
+1095;V01-Y89;External causes of morbidity and mortality
+1096;V01-V99;Transport accidents
+1097;W00-W19;Falls
+1098;W65-W74;Accidental drowning and submersion
+1099;X00-X09;Exposure to smoke, fire and flames
+1100;X40-X49;Accidental poisoning by and exposure to noxious substances
+1101;X60-X84;Intentional self-harm
+1102;X85-Y09;Assault
+1103;W20-W64, W75-W99, X10-X39, X50-X59, Y10-Y89;All other external causes
+
