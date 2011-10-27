@@ -16,7 +16,7 @@ print $line;
 
 while(<STDIN>)
 {
-    @line = split(/;/, $_);
+    @line = split(/,/, $_);
     if ($causeList{$line[1]} == 1)
     {
         print;

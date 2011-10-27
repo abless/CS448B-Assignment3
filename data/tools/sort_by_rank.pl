@@ -8,7 +8,7 @@ my $rank = 0;
 while(<FIN>)
 {
     chomp;
-    @row = split / /;
+    @row = split /;/;
     $causeRank{$row[0]} = $rank;
     $rank ++;
 }
