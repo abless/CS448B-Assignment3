@@ -9,33 +9,106 @@
     <style type="text/css">
 
 body {
-  font: 10px sans-serif;
+  font: 12px sans-serif;
+  margin: 0;
+  padding: 5px;
+  color: #888;
 }
-
+h1 {
+  padding-left: 10px;
+  margin-bottom: 2px;
+  color: #333;
+}
+.source {
+  padding-left: 10px;
+}
+.source a, .source a:hover {
+  color: #888;
+}
+.label {
+  position: absolute;
+  top: 60px;
+  left: 15px;
+  font-size: 48px;
+  font-weight: bold;
+  color: #dedede;
+}
+.break {
+  border-bottom: solid 1px #dedede;
+  margin: 10px 15px 2px 15px;
+  width: 545px;
+}
+.years, .controls {
+  padding-top: 10px;
+  padding-left: 15;
+  width: 540;
+  text-align: center;
+  font-size: 12px;
+}
+.years span, .controls span {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.years .title {
+  font-size: 13px;
+  font-variant: small-caps;
+  letter-spacing: 1;
+}
+.years a, .controls a {
+  color: #888;
+  text-decoration: none;
+}
+.years a.y1890 {
+  color: #bbb;
+}
+.years a.active {
+  color: #000;
+}
+.controls a {
+  font-variant: small-caps;
+  letter-spacing: 1;
+  text-decoration: none;
+}
+.controls a:hover {
+  color: #000;
+  text-decoration: underline;
+}
 svg {
   shape-rendering: crispEdges;
 }
-
-</style>
+    </style>
 </head>
 <body>
+  <h1>Mortality in the United States</h1>
+    <div class="source">
+    Source: WHO, <a href="ipums.org">who.org</a>.
+    </div>
   <script type="text/javascript">
 
 var year = 1999;
 
 //d3.csv("data/mockup.csv", function(data) {
 d3.csv("data/US_mortality.top10cause.csv", function(data) {
-  data.forEach(function(d) {
-    d.people = +d.people;
-    d.year = +d.year;
-  });
-    var causeData = d3.nest().key(function(d) { return d.cause; }).map(data);
-    var ageData = d3.nest().key(function(d) { return d.age; }).map(data);
+    data.forEach(function(d) {
+      d.people = +d.people;
+      d.year = +d.year;
+    });
 
     dataYear = data.filter(function(d) { return d.year == year; });
+
     // gender: 1 male 2 female
     var mdata = dataYear.filter(function(d) { return d.gender == 1; });
     var fdata = dataYear.filter(function(d) { return d.gender == 2; });
+
+    var causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
+    var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
+
+    // Calculate max # of people for scale
+    var maxp = 0;
+    for (var age in ageData) {
+      var genderByAgeData = d3.nest().key(function(d) { return d.gender}).map(ageData[age]);
+      maxp = Math.max(maxp, Math.max(genderByAgeData[1].reduce(function(a,b) { return a + b.people }, 0), genderByAgeData[2].reduce(function(a,b) { return a + b.people }, 0)));
+    }
 
     var ageGroup = Array();
     var mageLength = Array();
@@ -55,33 +128,38 @@ d3.csv("data/US_mortality.top10cause.csv", function(data) {
         causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
     }
 
-    var w = 600,
+    var w = 300,
         h = 430,
-        xRight = d3.scale.linear().domain([0, 500000]).range([0, w]),
-        xLeft = d3.scale.linear().domain([0, 500000]).range([w, 0]),
+        xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
+        xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
         y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
+
+  var label = d3.select("body")
+    .append("div")
+      .attr("class", "label")
+      .text("2000");
 
     var vis = d3.select("body")
         .append("svg:svg")
-        .attr("width", w + 40)
+        .attr("width", 2*w + 40)
         .attr("height", h + 40)
         .append("svg:g")
         .attr("transform", "translate(20,15)");
 
-    var ageText = vis.selectAll("text")
-        .data(ageGroup)
-        .enter().append("svg:text")
-        .attr("x", "340")
-        .attr("y", function(d) { return y(d); })
-        .attr("text-anchor", "middle")
-        .attr("dy", ".71em")
-        .text(function(d) { return d; });
 
     var bars = vis.selectAll("g.bar")
         .data(ageGroup)
         .enter().append("svg:g")
         .attr("class", "bar")
-        .attr("transform", function(d, i) { return "translate(320, 0)"; });
+        .attr("transform", function(d, i) { return "translate(0, " + y(i) + ")"; });
+
+    bars.append("svg:text")
+        .attr("x", w+15)
+        .attr("y", y.rangeBand() - 2)
+        .attr("fill", "#888")
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .text(function(d) { return d; });
 
     bars.each(function(d, i) {
         var causes = mdata.filter(function (d) { return d.age == ageGroup[i]; })
@@ -90,10 +168,11 @@ d3.csv("data/US_mortality.top10cause.csv", function(data) {
         .data(causes)
         .enter()
         .append("svg:rect")
-        //.attr("fill", "steelblue")
         .attr("fill", function(d) { return causeColor[d.cause]; })
-        .attr("y", function(d) { return y(d.age); })
-        .attr("x", function(d) { var temp = mageLength[d.age] + 40; mageLength[d.age] += xRight(d.people); return temp; })
+        .attr("transform", function(d,i) {
+          var pos = mageLength[d.age]; mageLength[d.age] += d.people;
+          return "translate("+ (w + 50 + xRight(pos)) +",0)";
+         })
         .attr("width", function(d) { return xRight(d.people);})
         .attr("height", y.rangeBand());
     });
@@ -105,10 +184,11 @@ d3.csv("data/US_mortality.top10cause.csv", function(data) {
         .data(causes)
         .enter()
         .append("svg:rect")
-        //.attr("fill", "steelblue")
         .attr("fill", function(d) { return causeColor[d.cause]; })
-        .attr("y", function(d) { return y(d.age); })
-        .attr("x", function(d) { var temp = fageLength[d.age] - xRight(d.people); fageLength[d.age] -= xRight(d.people); return temp; })
+        .attr("transform", function(d,i) {
+          var temp = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
+          return "translate("+ (xLeft(temp) - 20) +",0)";
+         })
         .attr("width", function(d) { return xRight(d.people);})
         .attr("height", y.rangeBand());
     });
@@ -126,29 +206,88 @@ d3.csv("data/US_mortality.top10cause.csv", function(data) {
        })
       .on("mouseout", function() { allbars.transition().attr("opacity", 1); });
 
-    var rules = vis.selectAll("g.rule")
-        .data(xRight.ticks(10))
-        .enter().append("svg:g")
-        .attr("class", "rule")
-        .attr("transform", function(d) { return "translate(" + xRight(d) + ",0)"; });
+/*
+      var rules = vis.selectAll("g.rule")
+          .data(xRight.ticks(10))
+          .enter().append("svg:g")
+          .attr("class", "rule")
+          .attr("transform", function(d) { return "translate(" + xRight(d) + ",0)"; });
 
-    rules.append("svg:line")
-        .attr("y1", h)
-        .attr("y2", h + 6)
-        .attr("stroke", "black");
+      rules.append("svg:line")
+          .attr("y1", h)
+          .attr("y2", h + 6)
+          .attr("stroke", "black");
 
-    rules.append("svg:line")
-        .attr("y1", 0)
-        .attr("y2", h)
-        .attr("stroke", "black")
-        .attr("stroke-opacity", .1);
+      rules.append("svg:line")
+          .attr("y1", 0)
+          .attr("y2", h)
+          .attr("stroke", "black")
+          .attr("stroke-opacity", .1);
 
-    rules.append("svg:text")
-        .attr("y", h + 9)
-        .attr("dy", ".71em")
-        .attr("text-anchor", "middle")
-        .text(xRight.tickFormat(10));
+      rules.append("svg:text")
+          .attr("y", h + 9)
+          .attr("dy", ".71em")
+          .attr("text-anchor", "middle")
+          .text(xRight.tickFormat(10));
+*/
 
+// gridlines and labels for right pyramid
+
+var rules1 = vis.selectAll("g.rule1")
+    .data(xRight.ticks(5))
+  .enter()
+  .append("svg:g")
+    .filter(function(d) { return d > 0; })
+    .attr("class", "rule1")
+    .attr("transform", function(d) { return "translate("+(w+30+xRight(d))+",0)";});
+
+rules1.append("svg:line")
+    .attr("y1", h - 2)
+    .attr("y2", h + 4)
+    .attr("stroke", "#bbb");
+
+rules1.append("svg:line")
+    .attr("y1", 0)
+    .attr("y2", h)
+    .attr("stroke", "#ddd")
+    .attr("stroke-opacity", .3);
+
+rules1.append("svg:text")
+    .attr("y", h + 9)
+    .attr("dy", ".71em")
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("fill", "#bbb")
+    .text(function(d) { return (d/1000).toFixed(0)+"T"; });
+
+// gridlines and labels for left pyramid
+
+var rules2 = vis.selectAll("g.rule2")
+    .data(xLeft.ticks(5))
+  .enter()
+  .append("svg:g")
+    .filter(function(d) { return d > 0; })
+    .attr("class", "rule2")
+    .attr("transform", function(d) { return "translate("+(xLeft(d))+",0)";});
+
+rules2.append("svg:line")
+    .attr("y1", h - 2)
+    .attr("y2", h + 4)
+    .attr("stroke", "#bbb");
+
+rules2.append("svg:line")
+    .attr("y1", 0)
+    .attr("y2", h)
+    .attr("stroke", "#ddd")
+    .attr("stroke-opacity", .3);
+
+rules2.append("svg:text")
+    .attr("y", h + 9)
+    .attr("dy", ".71em")
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("fill", "#bbb")
+    .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
 });
 
 
