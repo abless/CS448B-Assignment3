@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Bar Chart</title>
+     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js?1.29.1"></script>
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.time.js?1.29.1"></script>
@@ -87,207 +88,214 @@ svg {
 
 var year = 1999;
 
-//d3.csv("data/mockup.csv", function(data) {
-d3.csv("data/US_mortality.top10cause.csv", function(data) {
-    data.forEach(function(d) {
-      d.people = +d.people;
-      d.year = +d.year;
-    });
+var display = function(data) {
+  data.forEach(function(d) {
+    d.people = +d.people;
+    d.year = +d.year;
+  });
 
-    dataYear = data.filter(function(d) { return d.year == year; });
+  dataYear = data.filter(function(d) { return d.year == year; });
 
-    // gender: 1 male 2 female
-    var mdata = dataYear.filter(function(d) { return d.gender == 1; });
-    var fdata = dataYear.filter(function(d) { return d.gender == 2; });
+  // gender: 1 male 2 female
+  var mdata = dataYear.filter(function(d) { return d.gender == 1; });
+  var fdata = dataYear.filter(function(d) { return d.gender == 2; });
 
-    var causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
-    var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
+  var causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
+  var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
 
-    // Calculate max # of people for scale
-    var maxp = 0;
-    for (var age in ageData) {
-      var genderByAgeData = d3.nest().key(function(d) { return d.gender}).map(ageData[age]);
-      maxp = Math.max(maxp, Math.max(genderByAgeData[1].reduce(function(a,b) { return a + b.people }, 0), genderByAgeData[2].reduce(function(a,b) { return a + b.people }, 0)));
+  // Calculate max # of people for scale
+  var maxp = 0;
+  for (var age in ageData) {
+    var genderByAgeData = d3.nest().key(function(d) { return d.gender}).map(ageData[age]);
+    for (var gender in genderByAgeData) {
+      maxp = Math.max(maxp, genderByAgeData[gender].reduce(function(a,b) { return a + b.people }, 0));
     }
+  }
 
-    var ageGroup = Array();
-    var mageLength = Array();
-    var fageLength = Array();
-    for (var age in ageData)
-    {
-        ageGroup.push(age);
-        mageLength[age] = 0;
-        fageLength[age] = 0;
-    }
+  var ageGroup = Array();
+  var mageLength = Array();
+  var fageLength = Array();
+  for (var age in ageData)
+  {
+      ageGroup.push(age);
+      mageLength[age] = 0;
+      fageLength[age] = 0;
+  }
 
-    var causeGroup = Array();
-    var causeColor = Array();
-    for (var cause in causeData)
-    {
-        causeGroup.push(cause);
-        causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
-    }
+  var causeGroup = Array();
+  var causeColor = Array();
+  for (var cause in causeData)
+  {
+      causeGroup.push(cause);
+      causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
+  }
 
-    var w = 300,
-        h = 430,
-        xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
-        xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
-        y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
+  var w = 400,
+      h = 430,
+      xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
+      xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
+      y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
 
-  var label = d3.select("body")
-    .append("div")
-      .attr("class", "label")
-      .text("2000");
+  var barWidth = function(d) { return xRight(d.people); }
 
-    var vis = d3.select("body")
-        .append("svg:svg")
-        .attr("width", 2*w + 40)
-        .attr("height", h + 40)
-        .append("svg:g")
-        .attr("transform", "translate(20,15)");
+var label = d3.select("body")
+  .append("div")
+    .attr("class", "label")
+    .text("2000");
+
+d3.select("svg").remove();
+
+  var vis = d3.select("body")
+      .append("svg:svg")
+      .attr("width", 2*w + 40)
+      .attr("height", h + 40)
+      .append("svg:g")
+      .attr("transform", "translate(20,15)");
 
 
-    var bars = vis.selectAll("g.bar")
-        .data(ageGroup)
-        .enter().append("svg:g")
-        .attr("class", "bar")
-        .attr("transform", function(d, i) { return "translate(0, " + y(i) + ")"; });
+  var bars = vis.selectAll("g.bar")
+      .data(ageGroup)
+      .enter().append("svg:g")
+      .attr("class", "bar")
+      .attr("transform", function(d, i) { return "translate(0, " + y(i) + ")"; });
 
-    bars.append("svg:text")
-        .attr("x", w+15)
-        .attr("y", y.rangeBand() - 2)
-        .attr("fill", "#888")
-        .attr("text-anchor", "middle")
-        .attr("font-size", "12px")
-        .text(function(d) { return d; });
+  bars.filter(function(d,i) { return i%2 == 0;})
+      .append("svg:text")
+      .attr("x", w+15)
+      .attr("y", y.rangeBand() - 2)
+      .attr("fill", "#888")
+      .attr("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .text(function(d) { return d; });
 
-    bars.each(function(d, i) {
-        var causes = mdata.filter(function (d) { return d.age == ageGroup[i]; })
+  bars.each(function(d, i) {
+      var causes = mdata.filter(function (d) { return d.age == ageGroup[i]; })
 
-        d3.select(this).selectAll("g.bar")
-        .data(causes)
-        .enter()
-        .append("svg:rect")
-        .attr("fill", function(d) { return causeColor[d.cause]; })
-        .attr("transform", function(d,i) {
-          var pos = mageLength[d.age]; mageLength[d.age] += d.people;
-          return "translate("+ (w + 50 + xRight(pos)) +",0)";
-         })
-        .attr("width", function(d) { return xRight(d.people);})
-        .attr("height", y.rangeBand());
-    });
-
-    bars.each(function(d, i) {
-        var causes = fdata.filter(function (d) { return d.age == ageGroup[i]; });
-
-        d3.select(this).selectAll("g.bar")
-        .data(causes)
-        .enter()
-        .append("svg:rect")
-        .attr("fill", function(d) { return causeColor[d.cause]; })
-        .attr("transform", function(d,i) {
-          var temp = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
-          return "translate("+ (xLeft(temp) - 20) +",0)";
-         })
-        .attr("width", function(d) { return xRight(d.people);})
-        .attr("height", y.rangeBand());
-    });
-
-    var mbars = d3.selectAll("rect[gender='male']");
-    var fbars = d3.selectAll("rect[gender='female']");
-    var allbars = d3.selectAll("rect").attr("opacity", 1);
-
-    allbars
-      .on("mouseover", function(d) {
-        allbars
-        .filter(function(d2) { return d.cause != d2.cause })
-        .transition()
-        .attr("opacity", 0.3);
+      d3.select(this).selectAll("g.bar")
+      .data(causes)
+      .enter()
+      .append("svg:rect")
+      .attr("gender", "male")
+      .transition().duration(500)
+      .attr("fill", function(d) { return causeColor[d.cause]; })
+      .attr("transform", function(d,i) {
+        var pos = mageLength[d.age]; mageLength[d.age] += d.people;
+        return "translate("+ (w + 50 + xRight(pos)) +",0)";
        })
-      .on("mouseout", function() { allbars.transition().attr("opacity", 1); });
+      .attr("width", barWidth)
+      .attr("height", y.rangeBand());
+  });
 
-/*
-      var rules = vis.selectAll("g.rule")
-          .data(xRight.ticks(10))
-          .enter().append("svg:g")
-          .attr("class", "rule")
-          .attr("transform", function(d) { return "translate(" + xRight(d) + ",0)"; });
+  bars.each(function(d, i) {
+      var causes = fdata.filter(function (d) { return d.age == ageGroup[i]; });
 
-      rules.append("svg:line")
-          .attr("y1", h)
-          .attr("y2", h + 6)
-          .attr("stroke", "black");
+      d3.select(this).selectAll("g.bar")
+      .data(causes)
+      .enter()
+      .append("svg:rect")
+      .attr("gender", "female")
+      .attr("transform", function(d,i) {
+        var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
+        return "translate("+ (xLeft(pos - d.people) - 20) +",0)";
+       })
+      .transition().duration(500)
+      .attr("fill", function(d) { return causeColor[d.cause]; })
+      .attr("transform", function(d,i) {
+        //var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
+        var currentTransform = $(this).attr("transform");
+        var xPos = parseFloat(/translate\((.*),0\)/.exec(currentTransform)[1]);
+        return "translate("+ (xPos - xRight(d.people) - 20) +",0)";
+       })
+      .attr("width", barWidth)
+      .attr("height", y.rangeBand());
+  });
 
-      rules.append("svg:line")
-          .attr("y1", 0)
-          .attr("y2", h)
-          .attr("stroke", "black")
-          .attr("stroke-opacity", .1);
+  var mbars = d3.selectAll("rect[gender='male']");
+  var fbars = d3.selectAll("rect[gender='female']");
+  var allbars = d3.selectAll("rect").attr("opacity", 1);
 
-      rules.append("svg:text")
-          .attr("y", h + 9)
-          .attr("dy", ".71em")
-          .attr("text-anchor", "middle")
-          .text(xRight.tickFormat(10));
-*/
+  allbars
+    .on("mouseover", function(d) {
+      allbars
+      .filter(function(d2) { return d.cause != d2.cause })
+      .transition()
+      .attr("opacity", 0.3);
+     })
+    .on("mouseout", function() { allbars.transition().attr("opacity", 1); })
+    .on("click", function(d) {
+      // Transition out current bars
+      mbars.transition().duration(500).attr("width", 0);
+      fbars.transition().duration(500).attr("transform", function(d,i){
+        var currentTransform = $(this).attr("transform");
+        var xPos = parseFloat(/translate\((.*),0\)/.exec(currentTransform)[1]);
+        var width = parseFloat($(this).attr("width"));
+        return "translate("+ (xPos + width) +",0)";
+       }).attr("width", 0);
+
+       display(data.filter(function(e) { return d.cause == e.cause; }));
+    });
 
 // gridlines and labels for right pyramid
 
 var rules1 = vis.selectAll("g.rule1")
-    .data(xRight.ticks(5))
-  .enter()
-  .append("svg:g")
-    .filter(function(d) { return d > 0; })
-    .attr("class", "rule1")
-    .attr("transform", function(d) { return "translate("+(w+30+xRight(d))+",0)";});
+  .data(xRight.ticks(5))
+.enter()
+.append("svg:g")
+  .filter(function(d) { return d > 0; })
+  .attr("class", "rule1")
+  .attr("transform", function(d) { return "translate("+(w+30+xRight(d))+",0)";});
 
 rules1.append("svg:line")
-    .attr("y1", h - 2)
-    .attr("y2", h + 4)
-    .attr("stroke", "#bbb");
+  .attr("y1", h - 2)
+  .attr("y2", h + 4)
+  .attr("stroke", "#bbb");
 
 rules1.append("svg:line")
-    .attr("y1", 0)
-    .attr("y2", h)
-    .attr("stroke", "#ddd")
-    .attr("stroke-opacity", .3);
+  .attr("y1", 0)
+  .attr("y2", h)
+  .attr("stroke", "#ddd")
+  .attr("stroke-opacity", .3);
 
 rules1.append("svg:text")
-    .attr("y", h + 9)
-    .attr("dy", ".71em")
-    .attr("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .attr("fill", "#bbb")
-    .text(function(d) { return (d/1000).toFixed(0)+"T"; });
+  .attr("y", h + 9)
+  .attr("dy", ".71em")
+  .attr("text-anchor", "middle")
+  .attr("font-size", "12px")
+  .attr("fill", "#bbb")
+  .text(function(d) { return (d/1000).toFixed(0)+"T"; });
 
 // gridlines and labels for left pyramid
 
 var rules2 = vis.selectAll("g.rule2")
-    .data(xLeft.ticks(5))
-  .enter()
-  .append("svg:g")
-    .filter(function(d) { return d > 0; })
-    .attr("class", "rule2")
-    .attr("transform", function(d) { return "translate("+(xLeft(d))+",0)";});
+  .data(xLeft.ticks(5))
+.enter()
+.append("svg:g")
+  .filter(function(d) { return d > 0; })
+  .attr("class", "rule2")
+  .attr("transform", function(d) { return "translate("+(xLeft(d))+",0)";});
 
 rules2.append("svg:line")
-    .attr("y1", h - 2)
-    .attr("y2", h + 4)
-    .attr("stroke", "#bbb");
+  .attr("y1", h - 2)
+  .attr("y2", h + 4)
+  .attr("stroke", "#bbb");
 
 rules2.append("svg:line")
-    .attr("y1", 0)
-    .attr("y2", h)
-    .attr("stroke", "#ddd")
-    .attr("stroke-opacity", .3);
+  .attr("y1", 0)
+  .attr("y2", h)
+  .attr("stroke", "#ddd")
+  .attr("stroke-opacity", .3);
 
 rules2.append("svg:text")
-    .attr("y", h + 9)
-    .attr("dy", ".71em")
-    .attr("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .attr("fill", "#bbb")
-    .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
+  .attr("y", h + 9)
+  .attr("dy", ".71em")
+  .attr("text-anchor", "middle")
+  .attr("font-size", "12px")
+  .attr("fill", "#bbb")
+  .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
+}
+//d3.csv("data/mockup.csv", function(data) {
+d3.csv("data/US_mortality.top10.causesorted.csv", function(data) {
+    display(data);
 });
 
 
