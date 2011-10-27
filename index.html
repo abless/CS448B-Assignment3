@@ -216,37 +216,52 @@ bars.filter(function(d) { return d%2==0; })
     .attr("font-size", "12px")
     .text(function(d) { return (90-d*5).toFixed(0); });
 
-var mbars = bars.each(function(data,index) {
+bars.each(function(data,index) {
   var causes = mdat.filter(isYear)                                        // filter by year
                   .filter(function(d) { return d.age == 90 - 5 * index;}) // filter by age group
                   .map(function(d) { return d.stats; })
                   .reduce(function(a, b) { return a.concat(b); }, []);
 
-  d3.select(this).selectAll("g.bar")
+  var e = d3.select(this).selectAll("g.bar")
     .data(causes)
     .enter()
     .append("svg:rect")
+    .attr("gender", "male")
     .attr("fill", function(d) { return colors[d.cause]; })
     .attr("transform", function(d,i) { return "translate("+ (w + 30 + x1(position(i, causes))) +",0)";})
     .attr("width", barWidth)
     .attr("height", y.rangeBand());
 });
 
-var fbars = bars.each(function(data,index) {
+bars.each(function(data,index) {
   var causes = fdat.filter(isYear)                                        // filter by year
                   .filter(function(d) { return d.age == 90 - 5 * index;}) // filter by age group
                   .map(function(d) { return d.stats; })
-                  .reduce(function(a, b) { return a.concat(b); }, []);
+                  .reduce(function(a, b) { return a.concat(b); }, []);    // flatten
 
   d3.select(this).selectAll("g.bar")
     .data(causes)
     .enter()
     .append("svg:rect")
+    .attr("gender", "female")
     .attr("fill", function(d) { return colors[d.cause]; })
     .attr("transform", function(d,i) { return "translate("+ x2(-position(i, causes) - d.people) +",0)";})
     .attr("width", barWidth)
     .attr("height", y.rangeBand());
 });
+var mbars = d3.selectAll("rect[gender='male']");
+var fbars = d3.selectAll("rect[gender='female']");
+var allbars = d3.selectAll("rect").attr("opacity", 1);
+
+allbars
+  .on("mouseover", function(d) {
+    allbars
+    .filter(function(d2) { return d.cause != d2.cause })
+    .transition()
+    .attr("opacity", 0.4);
+   })
+  .on("mouseout", function() { allbars.transition().attr("opacity", 1); });
+
     </script>
   </body>
 </html>
