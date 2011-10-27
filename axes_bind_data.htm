@@ -24,7 +24,7 @@ svg {
 var year = 1999;
 
 //d3.csv("data/mockup.csv", function(data) {
-d3.csv("data/US_mortality.top100cause.csv", function(data) {
+d3.csv("data/US_mortality.top10cause.csv", function(data) {
   data.forEach(function(d) {
     d.people = +d.people;
     d.year = +d.year;
@@ -83,7 +83,7 @@ d3.csv("data/US_mortality.top100cause.csv", function(data) {
         .attr("class", "bar")
         .attr("transform", function(d, i) { return "translate(320, 0)"; });
 
-    var mbars = bars.each(function(d, i) {
+    bars.each(function(d, i) {
         var causes = mdata.filter(function (d) { return d.age == ageGroup[i]; })
 
         d3.select(this).selectAll("g.bar")
@@ -98,7 +98,7 @@ d3.csv("data/US_mortality.top100cause.csv", function(data) {
         .attr("height", y.rangeBand());
     });
 
-    var fbars = bars.each(function(d, i) {
+    bars.each(function(d, i) {
         var causes = fdata.filter(function (d) { return d.age == ageGroup[i]; });
 
         d3.select(this).selectAll("g.bar")
@@ -112,6 +112,19 @@ d3.csv("data/US_mortality.top100cause.csv", function(data) {
         .attr("width", function(d) { return xRight(d.people);})
         .attr("height", y.rangeBand());
     });
+
+    var mbars = d3.selectAll("rect[gender='male']");
+    var fbars = d3.selectAll("rect[gender='female']");
+    var allbars = d3.selectAll("rect").attr("opacity", 1);
+
+    allbars
+      .on("mouseover", function(d) {
+        allbars
+        .filter(function(d2) { return d.cause != d2.cause })
+        .transition()
+        .attr("opacity", 0.3);
+       })
+      .on("mouseout", function() { allbars.transition().attr("opacity", 1); });
 
     var rules = vis.selectAll("g.rule")
         .data(xRight.ticks(10))
