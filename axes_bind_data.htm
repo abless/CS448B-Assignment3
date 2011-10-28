@@ -81,6 +81,20 @@ h1 {
 svg {
   shape-rendering: crispEdges;
 }
+
+#popover {
+  position: absolute;
+  display: hidden;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+  display: inline-block;
+  background-color: white;
+}
+
+#popover #cause {
+  font-weight: bold;
+}
     </style>
 </head>
 <body>
@@ -95,7 +109,10 @@ svg {
     </div>
   </div>
   <div style="clear:both"></div>
-
+  <span id="popover">
+    <div id="cause">Cancer</div>
+    <span id="people">143</span> deaths
+  </span>
   <script type="text/javascript">
 
 var year = 2003;
@@ -189,12 +206,12 @@ d3.select("svg").remove();
       .append("svg:rect")
       .attr("gender", "male")
       .transition().duration(500)
-      .attr("fill", function(d, i) {
-          return d3.interpolateRgb("steelblue", "white")(0);
-      })
       .attr("transform", function(d,i) {
         var pos = mageLength[d.age]; mageLength[d.age] += d.people;
         return "translate("+ (w + 50 + xRight(pos)) +",0)";
+       })
+       .attr("fill", function(d, i) {
+           return d3.interpolateRgb("#c1d7f9", "#82aff2")(d.people/mageLength[d.age]);
        })
       .attr("width", barWidth)
       .attr("height", y.rangeBand());
@@ -214,13 +231,15 @@ d3.select("svg").remove();
         return "translate("+ (xLeft(pos - d.people) - 20) +",0)";
        })
       .transition().duration(500)
-      .attr("fill", function(d) { return causeColor[d.cause]; })
       .attr("transform", function(d,i) {
         //var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
         var currentTransform = $(this).attr("transform");
         var xPos = parseFloat(/translate\((.*),0\)/.exec(currentTransform)[1]);
         return "translate("+ (xPos - xRight(d.people) - 20) +",0)";
        })
+       .attr("fill", function(d, i) {
+          return d3.interpolateRgb("#f9c1c1", "#f28282")(d.people/fageLength[d.age]);
+        })
       .attr("width", barWidth)
       .attr("height", y.rangeBand());
   });
@@ -235,8 +254,13 @@ d3.select("svg").remove();
       .filter(function(d2) { return d.cause != d2.cause })
       .transition()
       .attr("opacity", 0.3);
+      $("#popover #cause").html(d.cause);
+      $("#popover #people").html(d.people);
+      $("#popover").css("left", d3.event.x)
+                   .css("top", d3.event.y)
+                   .show();
      })
-    .on("mouseout", function() { allbars.transition().attr("opacity", 1); })
+    .on("mouseout", function() { allbars.transition().attr("opacity", 1); $("#popover").hide(); })
     .on("click", function(d) {
       // Transition out current bars
       mbars.transition().duration(500).attr("width", 0);
@@ -313,7 +337,7 @@ rules2.append("svg:text")
   .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
 }
 //d3.csv("data/mockup.csv", function(data) {
-d3.csv("data/US_mortality.top10.causesorted.csv", function(data) {
+d3.csv("data/top10.ranksorted.csv", function(data) {
     allData = data;
     display(data);
 });
