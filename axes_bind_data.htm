@@ -27,13 +27,17 @@ h1 {
   color: #888;
 }
 .label {
-  position: absolute;
-  top: 60px;
-  left: 15px;
   font-size: 48px;
   font-weight: bold;
   color: #dedede;
+  float: left;
 }
+
+#filter {
+  float: left;
+  margin-left: 10px;
+}
+
 .break {
   border-bottom: solid 1px #dedede;
   margin: 10px 15px 2px 15px;
@@ -84,9 +88,17 @@ svg {
     <div class="source">
     Source: WHO, <a href="ipums.org">who.org</a>.
     </div>
+  <div id="info">
+    <div class="label">2000</div>
+    <div id="filter">
+      <input type="text" />
+    </div>
+  </div>
+  <div style="clear:both"></div>
+
   <script type="text/javascript">
 
-var year = 1999;
+var year = 2003;
 
 var display = function(data) {
   data.forEach(function(d) {
@@ -100,7 +112,7 @@ var display = function(data) {
   var mdata = dataYear.filter(function(d) { return d.gender == 1; });
   var fdata = dataYear.filter(function(d) { return d.gender == 2; });
 
-  var causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
+  causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
   var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
 
   // Calculate max # of people for scale
@@ -124,9 +136,12 @@ var display = function(data) {
 
   var causeGroup = Array();
   var causeColor = Array();
+  var causeColorIndex = Array();
+  var numCauses = 0;
   for (var cause in causeData)
   {
       causeGroup.push(cause);
+      causeColorIndex[cause] = numCauses++;
       causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
   }
 
@@ -138,10 +153,7 @@ var display = function(data) {
 
   var barWidth = function(d) { return xRight(d.people); }
 
-var label = d3.select("body")
-  .append("div")
-    .attr("class", "label")
-    .text("2000");
+
 
 d3.select("svg").remove();
 
@@ -177,13 +189,16 @@ d3.select("svg").remove();
       .append("svg:rect")
       .attr("gender", "male")
       .transition().duration(500)
-      .attr("fill", function(d) { return causeColor[d.cause]; })
+      .attr("fill", function(d, i) {
+          return d3.interpolateRgb("steelblue", "white")(0);
+      })
       .attr("transform", function(d,i) {
         var pos = mageLength[d.age]; mageLength[d.age] += d.people;
         return "translate("+ (w + 50 + xRight(pos)) +",0)";
        })
       .attr("width", barWidth)
       .attr("height", y.rangeBand());
+
   });
 
   bars.each(function(d, i) {
@@ -245,6 +260,7 @@ var rules1 = vis.selectAll("g.rule1")
   .attr("class", "rule1")
   .attr("transform", function(d) { return "translate("+(w+30+xRight(d))+",0)";});
 
+/*
 rules1.append("svg:line")
   .attr("y1", h - 2)
   .attr("y2", h + 4)
@@ -255,6 +271,7 @@ rules1.append("svg:line")
   .attr("y2", h)
   .attr("stroke", "#ddd")
   .attr("stroke-opacity", .3);
+*/
 
 rules1.append("svg:text")
   .attr("y", h + 9)
@@ -274,6 +291,7 @@ var rules2 = vis.selectAll("g.rule2")
   .attr("class", "rule2")
   .attr("transform", function(d) { return "translate("+(xLeft(d))+",0)";});
 
+/*
 rules2.append("svg:line")
   .attr("y1", h - 2)
   .attr("y2", h + 4)
@@ -284,6 +302,7 @@ rules2.append("svg:line")
   .attr("y2", h)
   .attr("stroke", "#ddd")
   .attr("stroke-opacity", .3);
+*/
 
 rules2.append("svg:text")
   .attr("y", h + 9)
@@ -295,10 +314,17 @@ rules2.append("svg:text")
 }
 //d3.csv("data/mockup.csv", function(data) {
 d3.csv("data/US_mortality.top10.causesorted.csv", function(data) {
+    allData = data;
     display(data);
 });
 
 
+$("#filter input").keyup(function() {
+  var prefix = $(this).val();
+  var filteredData = allData.filter(function(d) { return d.cause.substring(0, prefix.length) == prefix });
+  console.log(allData);
+  display(filteredData);
+});
 
 </script>
 </body>
