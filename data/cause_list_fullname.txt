@@ -1,0 +1,89 @@
+"Ischaemic heart diseases";3825026
+"Other heart diseases";1348931
+"Cerebrovascular diseases";1248921
+"Chronic lower respiratory diseases";1001527
+"Remainder of malignant neoplasms";618332
+"Diabetes mellitus";575953
+"Pneumonia";487811
+"Alzheimer's disease";482436
+"Remainder of diseases of the genitourinary system";454619
+"Hypertensive diseases";407191
+"Transport accidents";385752
+"Remainder of diseases of the digestive system";373063
+"Remainder of diseases of the nervous system";356305
+"Remainder of diseases of the respiratory system";354207
+"Malignant neoplasm of breast";333541
+"Remainder of endocrine;330075
+"Congenital malformations;287865
+"Diseases of the liver";286237
+"Septicaemia";264424
+"Intentional self-harm";262339
+"Malignant neoplasm of pancreas";248049
+"Malignant neoplasm of prostate";240528
+"Remainder of diseases of the circulatory system";232264
+"All other external causes";219137
+"Malignant neoplasm of lip;182450
+"Non-Hodgkin's lymphoma";173425
+"Leukaemia";171753
+"Accidental poisoning by and exposure to noxious substances";150224
+"Falls";136440
+"Remainder of certain infectious and parasitic diseases";130456
+"Malignant neoplasm of liver and intrahepatic bile ducts";115938
+"Malignant neoplasm of ovary";115547
+"Certain conditions originating in the perinatal period";114731
+"Diseases of the musculoskeletal system and connective tissue";112587
+"Remainder of neoplasms ";109365
+"Human immunodeficiency virus [HIV] disease";107918
+"Malignant neoplasm of oesophagus";102330
+"Atherosclerosis";102307
+"Malignant neoplasm of bladder";101806
+"Malignant neoplasm of stomach";96688
+"Exposure to smoke;87500
+"Multiple myeloma and malignant plasma cell neoplasms";86424
+"Mental and behavioural disorders due to psychoactive substance use";76058
+"Malignant melanoma of skin";62319
+"Malignant neoplasm of colon;56965
+"Malignant neoplasm of other and unspecified parts of uterus";55121
+"Viral hepatitis";45257
+"Malignant neoplasm of meninges;40065
+"Remainder of diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism";39682
+"Anaemias";37197
+"Malignant neoplasm of cervix uteri";32155
+"Gastric and duodenal ulcer";31459
+"Diseases of the skin and subcutaneous tissue";31424
+"Malignant neoplasm of larynx";30039
+"Accidental drowning and submersion";27744
+"Acute rheumatic fever and chronic rheumatic heart diseases";27711
+"Malnutrition";26536
+"Other intestinal infectious diseases";25958
+"Malignant neoplasm of trachea;25585
+"Remainder of mental and behavioural disorders";18555
+"Glomerular and renal tubulo-interstitial diseases";18134
+"Influenza";9531
+"Symptoms;8522
+"Meningitis";5778
+"Respiratory tuberculosis";4559
+"Remainder of pregnancy;3805
+"Other acute lower respiratory infections";3370
+"Other direct obstetric deaths";2927
+"Meningococcal infection";1342
+"Other tuberculosis";1240
+"Diarrhoea and gastroenteritis of presumed infectious origin";783
+"Indirect obstetric deaths";746
+"Other arthropod-borne viral fevers and viral haemorrhagic fevers";662
+"Diseases of the ear and mastoid process";545
+"Infections with a predominantly sexual mode of transmission";396
+"Diseases of the eye and adnexa";377
+"Pregnancy with abortive outcome";348
+"Malaria";155
+"Whooping cough";121
+"Tetanus";35
+"Rabies";19
+"Trypanosomiasis";18
+"Schistosomiasis";8
+"Measles";6
+"Plague";5
+"Diphtheria";3
+"Yellow fever";3
+"Cholera";1
+"Leishmaniasis";1
