@@ -25,7 +25,28 @@ while(<STDIN>)
     push @rows, [@line];
 }
 
-@result = sort {$causeRank{$a->[1]} <=> $causeRank{$b->[1]} } @rows;
+sub mycmp
+{
+    if ($causeRank{$a->[1]} != $causeRank{$b->[1]})
+    {
+        return $causeRank{$a->[1]} - $causeRank{$b->[1]};
+    }
+    if ($a->[0] != $b->[0])
+    {
+        return $a->[0] - $b->[0];
+    }
+    if ($a->[2] != $b->[2])
+    {
+        return $a->[2] - $b->[2];
+    }
+    $a->[3] =~ /([0-9]+)/;
+    $n1 = $1;
+    $b->[3] =~ /([0-9]+)/;
+    $n2 = $1;
+    return $n1 - $n2;
+}
+#@result = sort {$causeRank{$a->[1]} <=> $causeRank{$b->[1]} } @rows;
+@result = sort mycmp @rows;
 
 foreach ( @result)
 {
