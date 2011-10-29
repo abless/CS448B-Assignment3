@@ -3,10 +3,10 @@
   <head>
     <title>Bar Chart</title>
      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js?1.29.1"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.time.js?1.29.1"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.csv.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.layout.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.time.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.csv.js?1.29.1"></script>
     <style type="text/css">
 
 body {
@@ -31,11 +31,6 @@ h1 {
   font-weight: bold;
   color: #dedede;
   float: left;
-}
-
-#filter {
-  float: left;
-  margin-left: 10px;
 }
 
 .break {
@@ -84,16 +79,19 @@ svg {
 
 #popover {
   position: absolute;
-  display: hidden;
+  display: none;
   padding: 10px;
   border: 1px solid black;
   border-radius: 5px;
-  display: inline-block;
   background-color: white;
 }
 
 #popover #cause {
   font-weight: bold;
+}
+
+#match {
+  font-size: 25px;
 }
     </style>
 </head>
@@ -103,16 +101,20 @@ svg {
     Source: WHO, <a href="ipums.org">who.org</a>.
     </div>
   <div id="info">
-    <div class="label">2000</div>
-    <div id="filter">
-      <input type="text" />
-    </div>
+    <div class="label">2000 <span id="match">Top causes</span></div>
   </div>
   <div style="clear:both"></div>
+  <div id="filter">
+    <input type="text" />
+  </div>
+
   <span id="popover">
     <div id="cause">Cancer</div>
     <span id="people">143</span> deaths
   </span>
+
+
+
   <script type="text/javascript">
 
 var year = 2003;
@@ -271,6 +273,7 @@ d3.select("svg").remove();
         return "translate("+ (xPos + width) +",0)";
        }).attr("width", 0);
 
+       $("#match").html(d.cause);
        display(data.filter(function(e) { return d.cause == e.cause; }));
     });
 
@@ -345,8 +348,14 @@ d3.csv("data/top10.ranksorted.csv", function(data) {
 
 $("#filter input").keyup(function() {
   var prefix = $(this).val();
-  var filteredData = allData.filter(function(d) { return d.cause.substring(0, prefix.length) == prefix });
-  console.log(allData);
+  var filteredData = allData.filter(function(d) {
+    var regExp = new RegExp(prefix, "ig");
+    return regExp.exec(d.cause);
+  });
+  if (prefix.length)
+    $("#match").html(prefix);
+  else
+    $("#match").html("Top causes");
   display(filteredData);
 });
 
