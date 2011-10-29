@@ -257,7 +257,7 @@ d3.select("svg").remove();
       $("#popover #cause").html(d.cause);
       $("#popover #people").html(d.people);
       $("#popover").css("left", d3.event.x)
-                   .css("top", d3.event.y)
+                   .css("top", d3.event.y + 10)
                    .show();
      })
     .on("mouseout", function() { allbars.transition().attr("opacity", 1); $("#popover").hide(); })

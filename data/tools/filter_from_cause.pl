@@ -3,7 +3,7 @@
 open FIN, "<".$ARGV[0];
 
 my @causeList = ();
-for ($i = 0; $i < 10; $i ++)
+for ($i = 0; $i < $ARGV[1]; $i ++)
 {
     $line = <FIN>;
     @line = split(/;/, $line);
