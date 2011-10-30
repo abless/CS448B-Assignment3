@@ -16,7 +16,21 @@ function applyAgeFilter() {
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
   var ages = ageGroup.slice(min, max);
-  $("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
+  //$("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
+  var startAge, endAge;
+  if (ageGroup[min] == "95+") {
+      stargAge = "95+";
+  }
+  else {
+      stargAge = ageGroup[min].split(/-/)[0];
+  }
+  if (ageGroup[max - 1] == "95+") {
+      endAge = "95+";
+  }
+  else {
+      endAge = ageGroup[max - 1].split(/-/)[1];
+  }
+  $("#agegroup").html("from " + stargAge + " to " + endAge);
   return filteredData.filter(function(d) { return d.age in oc(ages); });
 }
 
@@ -94,8 +108,8 @@ var display = function(data) {
       .attr("y", y.rangeBand() - 2)
       .attr("fill", "#888")
       .attr("text-anchor", "middle")
-      .attr("font-size", "12px")
-      .text(function(d) { return d; });
+      .attr("font-size", "12px")      
+      .text(function(d) { return d.split(/-/)[0]; });
 
   bars.each(function(d, i) {
       var causes = mdata.filter(function (d) { return d.age == ageGroup[i]; })
