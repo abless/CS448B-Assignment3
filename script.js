@@ -111,7 +111,7 @@ var display = function(data) {
       .attr("fill", "#888")
       .attr("opacity", function(d) { return d in oc(ageGroupSlice) ? "1" : "0.3"})
       .attr("text-anchor", "middle")
-      .attr("font-size", "12px")      
+      .attr("font-size", "12px")
       .text(function(d) { return d.split(/-/)[0]; });
 
   bars.each(function(d, i) {
@@ -185,6 +185,7 @@ var display = function(data) {
        }).attr("width", 0);
 
        $("#match").html(d.cause);
+       $("#filter input").val(d.cause);
        filteredData = data.filter(function(e) { return d.cause == e.cause; });
        display(filteredData);
     });
