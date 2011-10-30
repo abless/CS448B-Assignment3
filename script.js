@@ -278,7 +278,7 @@ $(document).ready(function() {
       {
         function showNextYearData() {
           $("#year").html(year);
-          display();
+          display(applyAgeFilter());
 
           if (year == 2005) {
             stopAutoPlay();
