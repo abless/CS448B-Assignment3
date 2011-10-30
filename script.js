@@ -288,6 +288,7 @@ $(document).ready(function() {
       {
         function showNextYearData() {
           $("#year").html(year);
+          $("#yearSlider").slider("value", year);
           display(applyAgeFilter());
 
           if (year == 2005) {
@@ -300,7 +301,7 @@ $(document).ready(function() {
         // Execute for the first time when clicked
         showNextYearData();
         // Set the timer to make it execute automatically
-        autoPlayTimer = setInterval(showNextYearData, 500);
+        autoPlayTimer = setInterval(showNextYearData, 1000);
       }
   }
   function stopAutoPlay() {
