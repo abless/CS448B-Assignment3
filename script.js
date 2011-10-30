@@ -12,6 +12,13 @@ function oc(a)
   return o;
 }
 
+function applyAgeFilter() {
+  var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
+  var max = ageGroup.length - $("#ageSlider").slider("values", 0);
+  var ages = ageGroup.slice(min, max);
+  return filteredData.filter(function(d) { return d.age in oc(ages); });
+}
+
 var display = function(data) {
   if (data == undefined)
     data = filteredData;
@@ -243,12 +250,7 @@ $(document).ready(function() {
         values: [0, ageGroup.length-1],
         range: true,
         change: function(event, ui) {
-         var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
-         var max = ageGroup.length - $("#ageSlider").slider("values", 0);
-         var ages = ageGroup.slice(min, max);
-         ageFilteredData = filteredData.filter(function(d) { return d.age in oc(ages); });
-
-         display(ageFilteredData);
+         display(applyAgeFilter());
         }
       });
 
@@ -264,7 +266,7 @@ $(document).ready(function() {
       });
       display(data);
   });
-    
+
   var autoPlayTimer = null;
 
   function startAutoPlay()
@@ -279,10 +281,10 @@ $(document).ready(function() {
 
           if (year == 2005) {
             stopAutoPlay();
-          }        
+          }
           else {
             year ++;
-          }      
+          }
         }
         // Execute for the first time when clicked
         showNextYearData();
@@ -316,7 +318,8 @@ $(document).ready(function() {
       $("#match").html(prefix);
     else
       $("#match").html("All causes");
-    display(filteredData);
+
+    display(applyAgeFilter());
   }
   $("#filter input").keyup(function() {
     var prefix = $(this).val();
