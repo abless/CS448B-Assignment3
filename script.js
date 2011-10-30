@@ -15,9 +15,9 @@ function oc(a)
 function applyAgeFilter() {
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
-  var ages = ageGroup.slice(min, max);
+  ageGroupSlice = ageGroup.slice(min, max);
   $("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
-  return filteredData.filter(function(d) { return d.age in oc(ages); });
+  return filteredData.filter(function(d) { return d.age in oc(ageGroupSlice); });
 }
 
 var display = function(data) {
@@ -93,6 +93,7 @@ var display = function(data) {
       .attr("x", w+15)
       .attr("y", y.rangeBand() - 2)
       .attr("fill", "#888")
+      .attr("opacity", function(d) { return d in oc(ageGroupSlice) ? "1" : "0.3"})
       .attr("text-anchor", "middle")
       .attr("font-size", "12px")
       .text(function(d) { return d; });
@@ -252,6 +253,7 @@ $(document).ready(function() {
       for (var age in d3.nest().key(function(d) { return d.age; }).map(allData))
         ageGroup.push(age);
 
+      ageGroupSlice = ageGroup;
       $("#ageSlider").slider({
         orientation: "vertical",
         min: 0,
