@@ -103,78 +103,12 @@ function position(index, causes) {
   return pos;
 }
 
-function goto(y, dur) {
-  dur = dur || 300;
-  year = y;
-  label.text(year);
-  div.selectAll("span.link a")
-     .attr("class", linkClass);
-
-  mbars.data(mdat.filter(isYear))
-     .transition()
-       .duration(dur)
-         .attr("width", function(d) { return x1(d.people); });
-  mbars.select("title").text(tooltipText);
-
-  fbars.data(fdat.filter(isYear))
-       .transition()
-         .duration(dur)
-       .attr("transform", function(d) { return "translate("+(x2(d.people))+",0)";})
-       .attr("width", function(d) { return x1(d.people); });
-  fbars.select("title").text(tooltipText);
-}
-
-var timer = undefined;
-function stop() {
-    clearInterval(timer);
-    timer = undefined;
-    ctrls.select("a.toggle").text("play");
-}
-function toggle() {
-  if (!timer) {
-    year = 1840;
-    play();
-  } else {
-    stop();
-  }
-}
-function play(rev) {
-  rev = rev || false;
-  if (timer) { stop(); }
-  ctrls.select("a.toggle").text("stop");
-  var advance = function() {
-    var y = year + (rev?-1:1)*10;
-    if (y == 1890) {
-      // skip 1890
-      y = y + (rev?-1:1)*10;
-    }
-    if (y < 1850 || y > 2000) {
-      // stop at end points
-      stop();
-      return;
-    } else {
-      // else advance
-      goto(y, 800);
-    }
-  };
-  advance();
-  timer = setInterval(advance, 850);
-}
-
 var data = mortality,
     maxp = data.reduce(function(a,b) { return Math.max(a, b.stats.reduce(function(a,b) { return a+b.people; }, 0)) }, 0),
     mdat = data.filter(function(d) { return d.sex==1; })
                .sort(function(a,b) { return b.age - a.age; }),
     fdat = data.filter(function(d) { return d.sex==2; })
                .sort(function(a,b) { return b.age - a.age; });
-
-// An example of how to filter by cause
-// mdat.map(function(d) { d.stats = d.stats.filter(function(stat) { return stat.cause == "Heart"; }); return d; });
-
-var colors = {
-  "Cancer": "steelblue",
-  "Heart": "orange"
-};
 
 var w = 250,
     h = 19 * 20,
