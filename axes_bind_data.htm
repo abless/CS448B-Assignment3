@@ -2,13 +2,19 @@
 <html>
   <head>
     <title>Bar Chart</title>
+    <link rel="stylesheet" href="lib/jquery-ui/css/smoothness/jquery-ui-1.8.10.custom.css">
+    <link rel="stylesheet" href="css/dev.css">
+
      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
     <script type="text/javascript" src="slimScroll.min.js"></script>
     <script type="text/javascript" src="d3.js?1.29.1"></script>
     <script type="text/javascript" src="d3.layout.js?1.29.1"></script>
     <script type="text/javascript" src="d3.time.js?1.29.1"></script>
     <script type="text/javascript" src="d3.csv.js?1.29.1"></script>
+
+    <script src="jquery.mousewheel.min.js"></script>
+    <script src="lib/jquery-ui/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="jQAllRangeSliders-min.js"></script>
     <style type="text/css">
 
 body {
@@ -107,7 +113,7 @@ svg {
   </div>
   <div style="clear:both"></div>
   <div id="filter">
-    <input type="text" />
+    Filter by cause: <input type="text" />
   </div>
 
   <span id="popover">
@@ -115,14 +121,12 @@ svg {
     <span id="people">143</span> deaths
   </span>
 
-  <div id="yearslider" style="width: 400px">
-    asdf
-  </div>
+  <div id="yearSlider" class="slider"></div>
+
 
 
   <script type="text/javascript">
-
-var year = 2003;
+var year = 2000;
 
 var display = function(data) {
   data.forEach(function(d) {
@@ -170,7 +174,7 @@ var display = function(data) {
   }
 
   var w = 400,
-      h = 430,
+      h = 330,
       xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
       xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
       y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
@@ -344,25 +348,35 @@ rules2.append("svg:text")
   .attr("fill", "#bbb")
   .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
 }
-//d3.csv("data/mockup.csv", function(data) {
-d3.csv("data/top10.ranksorted.csv", function(data) {
-    allData = data;
-    display(data);
-});
 
+$(document).ready(function() {
 
-$("#filter input").keyup(function() {
-  var prefix = $(this).val();
-  var filteredData = allData.filter(function(d) {
-    var regExp = new RegExp(prefix, "ig");
-    return regExp.exec(d.cause);
+  d3.csv("data/top10.ranksorted.csv", function(data) {
+      allData = data;
+      display(data);
   });
-  if (prefix.length)
-    $("#match").html(prefix);
-  else
-    $("#match").html("Top causes");
-  display(filteredData);
+
+  $("#filter input").keyup(function() {
+    var prefix = $(this).val();
+    var filteredData = allData.filter(function(d) {
+      var regExp = new RegExp(prefix, "ig");
+      return regExp.exec(d.cause);
+    });
+    if (prefix.length)
+      $("#match").html(prefix);
+    else
+      $("#match").html("Top causes");
+    display(filteredData);
+  });
+
+  $("#yearSlider").slider({
+    min: 1999,
+    max: 3004,
+    value: 2000
+  });
+
 });
+
 
 </script>
 </body>
