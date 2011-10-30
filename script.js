@@ -12,7 +12,10 @@ function oc(a)
   return o;
 }
 
-function applyAgeFilter() {
+function applyAgeFilter(data) {
+  if (data == undefined)
+    data = filteredData;
+
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
   var ages = ageGroup.slice(min, max);
@@ -33,19 +36,19 @@ function applyAgeFilter() {
       endAge = ageGroup[max - 1].split(/-/)[1];
   }
   $("#agegroup").html("from " + stargAge + " to " + endAge);
-  return filteredData.filter(function(d) { return d.age in oc(ageGroupSlice); });
+  return data.filter(function(d) { return d.age in oc(ageGroupSlice); });
 }
 
-var display = function(data) {
-  if (data == undefined)
-    data = filteredData;
+var display = function() {
+  var data = filteredData;
 
+  // Convert to integer type
   data.forEach(function(d) {
     d.people = +d.people;
     d.year = +d.year;
   });
 
-  dataYear = data.filter(function(d) { return d.year == year; });
+  dataYear = applyAgeFilter(data.filter(function(d) { return d.year == year; }));
 
   // gender: 1 male 2 female
   var mdata = dataYear.filter(function(d) { return d.gender == 1; });
@@ -71,24 +74,11 @@ var display = function(data) {
       fageLength[age] = 0;
   }
 
-  var causeGroup = Array();
-  var causeColor = Array();
-  var causeColorIndex = Array();
-  var numCauses = 0;
-  for (var cause in causeData)
-  {
-      causeGroup.push(cause);
-      causeColorIndex[cause] = numCauses++;
-      causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
-  }
-
   var xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
       xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
       y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
 
   var barWidth = function(d) { return xRight(d.people); }
-
-
 
   d3.select("svg").remove();
   var vis = d3.select("body #content")
@@ -104,7 +94,7 @@ var display = function(data) {
       .attr("class", "bar")
       .attr("transform", function(d, i) { return "translate(0, " + y(i) + ")"; });
 
-  bars.filter(function(d,i) { return i%2 == 0;})
+  bars.filter(function(d,i) { return i % 2 == 0; })
       .append("svg:text")
       .attr("x", w+15)
       .attr("y", y.rangeBand() - 2)
@@ -122,7 +112,6 @@ var display = function(data) {
       .enter()
       .append("svg:rect")
       .attr("gender", "male")
-      //.transition().duration(500)
       .attr("transform", function(d,i) {
         var pos = mageLength[d.age]; mageLength[d.age] += d.people;
         return "translate("+ (w + xRight(pos) + 50) +",0)";
@@ -172,6 +161,18 @@ var display = function(data) {
        filteredData = data.filter(function(e) { return d.cause == e.cause; });
        display(filteredData);
     });
+
+// age label
+vis.append("svg:text")
+    .attr("x", w+15)
+    .attr("y", 0 - 15)
+    .attr("dy", ".71em")
+    .attr("fill", "#888")
+    .attr("text-anchor", "middle")
+    .attr("font-size", "15px")
+    .attr("font-variant", "small-caps")
+    .attr("letter-spacing", 1)
+    .text("age");
 
 // gridlines and labels for right pyramid
 
@@ -261,11 +262,13 @@ $(document).ready(function() {
         value: 1999,
         slide: function(event, ui) {
          year = ui.value;
-         $("#year").html(year);
-         display();
+         if ($("#year").html != ("" + year)) {
+           $("#year").html(year);
+           display();
+         }
         }
       });
-      display(data);
+      display();
   });
 
   var autoPlayTimer = null;
@@ -321,7 +324,7 @@ $(document).ready(function() {
     else
       $("#match").html("All causes");
 
-    display(applyAgeFilter());
+    display();
   }
   $("#filter input").keyup(function() {
     var prefix = $(this).val();
