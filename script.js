@@ -305,7 +305,7 @@ $(document).ready(function() {
         // Execute for the first time when clicked
         showNextYearData();
         // Set the timer to make it execute automatically
-        autoPlayTimer = setInterval(showNextYearData, 1000);
+        autoPlayTimer = setInterval(showNextYearData, 500);
       }
   }
   function stopAutoPlay() {
