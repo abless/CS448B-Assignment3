@@ -47,20 +47,31 @@ var display = function(data) {
 
   dataYear = data.filter(function(d) { return d.year == year; });
 
+  var mdataAllYear = data.filter(function(d) { return d.gender == 1; });
+  var fdataAllYear = data.filter(function(d) { return d.gender == 2; });
+
   // gender: 1 male 2 female
-  var mdata = dataYear.filter(function(d) { return d.gender == 1; });
-  var fdata = dataYear.filter(function(d) { return d.gender == 2; });
+  // var mdata = dataYear.filter(function(d) { return d.gender == 1; });
+  // var fdata = dataYear.filter(function(d) { return d.gender == 2; });
+  var mdata = mdataAllYear.filter(function(d) { return d.year == year; });
+  var fdata = fdataAllYear.filter(function(d) { return d.year == year; });
 
   causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
   var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
+  //causeData = d3.nest().key(function(d) { return d.cause; }).map(data);
+  //var ageData = d3.nest().key(function(d) { return d.age; }).map(data);
 
   // Calculate max # of people for scale
   var maxp = 0;
-  for (var age in ageData) {
-    var genderByAgeData = d3.nest().key(function(d) { return d.gender}).map(ageData[age]);
-    for (var gender in genderByAgeData) {
-      maxp = Math.max(maxp, genderByAgeData[gender].reduce(function(a,b) { return a + b.people }, 0));
-    }
+  for (var currentYear = 1999; currentYear <= 2005; currentYear ++) {
+      for (var age in ageData) {
+        for (var gender = 1; gender <= 2; gender ++) {
+            var allData = data.filter(function(d) { return d.year == currentYear; })
+                          .filter(function(d) { return d.gender == gender;})
+                          .filter(function(d) { return d.age == age; });
+            maxp = Math.max(maxp, allData.reduce(function(a,b) { return a + b.people }, 0));
+        }
+      }
   }
 
   var mageLength = Array();
