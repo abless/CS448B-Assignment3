@@ -2,6 +2,16 @@ var year = 2000;
 var w = 400,
     h = 330;
 
+function oc(a)
+{
+  var o = {};
+  for(var i=0;i<a.length;i++)
+  {
+    o[a[i]]='';
+  }
+  return o;
+}
+
 var display = function(data) {
   if (data == undefined)
     data = filteredData;
@@ -231,7 +241,15 @@ $(document).ready(function() {
         min: 0,
         max: ageGroup.length-1,
         values: [0, ageGroup.length-1],
-        range: true
+        range: true,
+        change: function(event, ui) {
+         var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
+         var max = ageGroup.length - $("#ageSlider").slider("values", 0);
+         var ages = ageGroup.slice(min, max);
+         ageFilteredData = filteredData.filter(function(d) { return d.age in oc(ages); });
+
+         display(ageFilteredData);
+        }
       });
 
       $("#yearSlider").slider({
