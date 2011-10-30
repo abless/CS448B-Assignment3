@@ -54,10 +54,10 @@ var display = function() {
   var fdataAllYear = data.filter(function(d) { return d.gender == 2; });
 
   // gender: 1 male 2 female
-  // var mdata = dataYear.filter(function(d) { return d.gender == 1; });
-  // var fdata = dataYear.filter(function(d) { return d.gender == 2; });
-  var mdata = mdataAllYear.filter(function(d) { return d.year == year; });
-  var fdata = fdataAllYear.filter(function(d) { return d.year == year; });
+   var mdata = dataYear.filter(function(d) { return d.gender == 1; });
+   var fdata = dataYear.filter(function(d) { return d.gender == 2; });
+  //var mdata = mdataAllYear.filter(function(d) { return d.year == year; });
+  //var fdata = fdataAllYear.filter(function(d) { return d.year == year; });
 
   causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
   var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
@@ -67,6 +67,7 @@ var display = function() {
   // Calculate max # of people for scale
   var maxp = 0;
   for (var currentYear = 1999; currentYear <= 2005; currentYear ++) {
+  //for (var currentYear = year; currentYear <= year; currentYear ++) {
       for (var age in ageData) {
         for (var gender = 1; gender <= 2; gender ++) {
             var allData = data.filter(function(d) { return d.year == currentYear; })
@@ -305,7 +306,7 @@ $(document).ready(function() {
         // Execute for the first time when clicked
         showNextYearData();
         // Set the timer to make it execute automatically
-        autoPlayTimer = setInterval(showNextYearData, 1000);
+        autoPlayTimer = setInterval(showNextYearData, 500);
       }
   }
   function stopAutoPlay() {
