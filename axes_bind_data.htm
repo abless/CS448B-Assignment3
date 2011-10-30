@@ -102,10 +102,6 @@ svg {
   font-size: 25px;
 }
 
-#content {
-  width: 800px;
-}
-
 #yearAxis {
   margin: auto;
   margin-top: 30px;
@@ -118,9 +114,25 @@ svg {
   margin-top: 5px;
 }
 
+#ageAxis {
+  float: left;
+  margin-top: 10px;
+}
+
+#ageAxis, #ageSlider {
+   height: 330px;
+}
+
+#content {
+  width: 800px;
+  margin-left: 30px;
+}
+
 </style>
     <script type="text/javascript">
   var year = 2000;
+  var w = 400,
+      h = 330;
 
   var display = function(data) {
     if (data == undefined)
@@ -168,9 +180,7 @@ svg {
         causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
     }
 
-    var w = 400,
-        h = 330,
-        xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
+    var xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
         xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
         y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
 
@@ -351,6 +361,25 @@ svg {
         ageGroup = [];
         for (var age in d3.nest().key(function(d) { return d.age; }).map(allData))
           ageGroup.push(age);
+
+        $("#ageSlider").slider({
+          orientation: "vertical",
+          min: 0,
+          max: ageGroup.length-1,
+          values: [0, ageGroup.length-1],
+          range: true
+        });
+
+        $("#yearSlider").slider({
+          min: 1999,
+          max: 2005,
+          value: 2000,
+          slide: function(event, ui) {
+           year = ui.value;
+           $("#year").html(year);
+           display();
+          }
+        });
         display(data);
     });
 
@@ -366,18 +395,6 @@ svg {
         $("#match").html("Top causes");
       display(filteredData);
     });
-
-    $("#yearSlider").slider({
-      min: 1999,
-      max: 2005,
-      value: 2000,
-      slide: function(event, ui) {
-       year = ui.value;
-       $("#year").html(year);
-       display();
-      }
-    });
-
   });
 
 
@@ -401,6 +418,9 @@ svg {
     <span id="people">143</span> deaths
   </span>
 
+  <div id="ageAxis">
+    <div id="ageSlider"></div>
+  </div>
   <div id="content">
     <div id="yearAxis">
       <div id="yearSlider"></div>
