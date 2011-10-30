@@ -16,6 +16,7 @@ function applyAgeFilter() {
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
   var ages = ageGroup.slice(min, max);
+  $("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
   return filteredData.filter(function(d) { return d.age in oc(ages); });
 }
 
@@ -278,8 +279,7 @@ $(document).ready(function() {
         function showNextYearData() {
           $("#year").html(year);
           $("#yearSlider").slider("value", year);
-          display();
-
+          display(applyAgeFilter());
 
           if (year == 2005) {
             stopAutoPlay();
