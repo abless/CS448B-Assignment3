@@ -18,9 +18,10 @@ while(<STDIN>)
 {
     chomp;
     split /,/;
-    if (exists $causeMap{$_[1]} && defined $causeMap{$_[1]})
+    $shortCause = substr($_[1], 0, 3);
+    if (exists $causeMap{$shortCause} && defined $causeMap{$shortCause})
     {
-        print $_[0].",\"".$causeMap{$_[1]}."\",".$_[2].",".$_[3].",".$_[4]."\n";
+        print $_[0].",\"".$causeMap{$shortCause}."\",".$_[2].",".$_[3].",".$_[4]."\n";
     }
 }
 
