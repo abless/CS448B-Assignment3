@@ -93,7 +93,7 @@ var display = function(data) {
   d3.select("svg").remove();
   var vis = d3.select("body #content")
       .insert("svg:svg", "#yearAxis")
-      .attr("width", 2*w + 40)
+      .attr("width", 2*w + 80)
       .attr("height", h + 40)
       .append("svg:g")
       .attr("transform", "translate(20,15)");
@@ -143,14 +143,7 @@ var display = function(data) {
       .attr("gender", "female")
       .attr("transform", function(d,i) {
         var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
-        return "translate("+ (xLeft(pos - d.people) - 20) +",0)";
-       })
-      //.transition().duration(500)
-      .attr("transform", function(d,i) {
-        //var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
-        var currentTransform = $(this).attr("transform");
-        var xPos = parseFloat(/translate\((.*),0\)/.exec(currentTransform)[1]);
-        return "translate("+ (xPos - xRight(d.people)) +",0)";
+        return "translate("+ (xLeft(pos) - 20) +",0)";
        })
        .attr("fill", function(d, i) { return (i % 2 == 0) ? "#f39393" : "#f28282"; })
       .attr("width", barWidth)
