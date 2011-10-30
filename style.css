@@ -84,6 +84,10 @@ svg {
   font-size: 25px;
 }
 
+#agegroup {
+  font-size: 15px;
+}
+
 #yearAxis {
   margin: auto;
   margin-top: 30px;

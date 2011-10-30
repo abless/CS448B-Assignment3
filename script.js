@@ -16,6 +16,7 @@ function applyAgeFilter() {
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
   var ages = ageGroup.slice(min, max);
+  $("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
   return filteredData.filter(function(d) { return d.age in oc(ages); });
 }
 
