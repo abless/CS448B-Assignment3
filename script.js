@@ -1,4 +1,4 @@
-var year = 2000;
+var year = 1999;
 var w = 400,
     h = 330;
 
@@ -237,7 +237,7 @@ $(document).ready(function() {
       $("#yearSlider").slider({
         min: 1999,
         max: 2005,
-        value: 2000,
+        value: 1999,
         slide: function(event, ui) {
          year = ui.value;
          $("#year").html(year);
@@ -245,6 +245,48 @@ $(document).ready(function() {
         }
       });
       display(data);
+  });
+    
+  var autoPlayTimer = null;
+
+  function startAutoPlay()
+  {
+      $("#btnPlay").html("Stop Auto Play");
+      year = 1999;
+      if (!autoPlayTimer)
+      {
+        function showNextYearData() {
+          $("#year").html(year);
+          display();
+
+          if (year == 2005) {
+            stopAutoPlay();
+          }        
+          else {
+            year ++;
+          }      
+        }
+        // Execute for the first time when clicked
+        showNextYearData();
+        // Set the timer to make it execute automatically
+        autoPlayTimer = setInterval(showNextYearData, 500);
+      }
+  }
+  function stopAutoPlay() {
+      if (autoPlayTimer) {
+        $("#btnPlay").html("Auto Play");
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
+  }
+
+  $("#btnPlay").click(function() {
+      if (autoPlayTimer) {
+        stopAutoPlay();
+      }
+      else {
+        startAutoPlay();
+      }
   });
 
   function filterCause(prefix) {
