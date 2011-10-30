@@ -215,7 +215,15 @@ svg {
           return "translate("+ (w + xRight(pos) + 50) +",0)";
          })
          .attr("fill", function(d, i) {
-             return d3.interpolateRgb("#c1d7f9", "#82aff2")(d.people/mageLength[d.age]);
+             if (i % 2 == 0)
+             {
+                 return "#82aff2";
+             }
+             else
+             {
+                 return "#93bff3";
+             }
+             //return d3.interpolateRgb("#c1d7f9", "#82aff2")(d.people/mageLength[d.age]);
          })
         .attr("width", barWidth)
         .attr("height", y.rangeBand());
@@ -242,7 +250,15 @@ svg {
           return "translate("+ (xPos - xRight(d.people)) +",0)";
          })
          .attr("fill", function(d, i) {
-            return d3.interpolateRgb("#f9c1c1", "#f28282")(d.people/fageLength[d.age]);
+             if (i % 2 == 0)
+             {
+                 return "#f39393";
+             }
+             else
+             {
+                 return "#f28282";
+             }
+            //return d3.interpolateRgb("#f9c1c1", "#f28282")(d.people/fageLength[d.age]);
           })
         .attr("width", barWidth)
         .attr("height", y.rangeBand());
@@ -384,12 +400,12 @@ svg {
   </script>
 </head>
 <body>
-  <h1>Mortality in the United States</h1>
+  <h1>Mortality Causes in the United States from 1999 to 2005</h1>
     <div class="source">
     Source: WHO, <a href="ipums.org">who.org</a>.
     </div>
   <div id="info">
-    <div class="label"><span id="year"></span> <span id="match">Top causes</span></div>
+    <div class="label"><span id="year"></span> <span id="match">All causes</span></div>
   </div>
   <div style="clear:both"></div>
   <div id="filter">
