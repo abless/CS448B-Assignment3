@@ -16,10 +16,17 @@ print $line;
 
 while(<STDIN>)
 {
-    @line = split(/,/, $_);
-    if ($causeList{$line[1]} == 1)
+    #@line = split(/,/, $_);
+    if ($_ =~ /(.+),(".+"),([12]),(.+),([0-9]+)/)
     {
-        print;
+        if ($causeList{$2} == 1)
+        {
+            print;
+        }
+    }
+    else
+    {
+        print "Error\n";
     }
 }
 

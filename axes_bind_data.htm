@@ -340,7 +340,7 @@ rules2.append("svg:text")
   .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
 }
 //d3.csv("data/mockup.csv", function(data) {
-d3.csv("data/top10.ranksorted.csv", function(data) {
+d3.csv("data/top50.ranksorted.csv", function(data) {
     allData = data;
     display(data);
 });
