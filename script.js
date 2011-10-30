@@ -16,6 +16,8 @@ function applyAgeFilter() {
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
   var ages = ageGroup.slice(min, max);
+  ageGroupSlice = ageGroup.slice(min, max);
+
   //$("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
   var startAge, endAge;
   if (ageGroup[min] == "95+") {
@@ -31,7 +33,7 @@ function applyAgeFilter() {
       endAge = ageGroup[max - 1].split(/-/)[1];
   }
   $("#agegroup").html("from " + stargAge + " to " + endAge);
-  return filteredData.filter(function(d) { return d.age in oc(ages); });
+  return filteredData.filter(function(d) { return d.age in oc(ageGroupSlice); });
 }
 
 var display = function(data) {
@@ -107,6 +109,7 @@ var display = function(data) {
       .attr("x", w+15)
       .attr("y", y.rangeBand() - 2)
       .attr("fill", "#888")
+      .attr("opacity", function(d) { return d in oc(ageGroupSlice) ? "1" : "0.3"})
       .attr("text-anchor", "middle")
       .attr("font-size", "12px")      
       .text(function(d) { return d.split(/-/)[0]; });
@@ -194,9 +197,9 @@ var rules1 = vis.selectAll("g.rule1")
 .append("svg:g")
   .filter(function(d) { return d > 0; })
   .attr("class", "rule1")
-  .attr("transform", function(d) { return "translate("+(w+30+xRight(d))+",0)";});
+  .attr("transform", function(d) { return "translate("+(w+50+xRight(d))+",0)";});
 
-/*
+
 rules1.append("svg:line")
   .attr("y1", h - 2)
   .attr("y2", h + 4)
@@ -207,7 +210,7 @@ rules1.append("svg:line")
   .attr("y2", h)
   .attr("stroke", "#ddd")
   .attr("stroke-opacity", .3);
-*/
+
 
 rules1.append("svg:text")
   .attr("y", h + 9)
@@ -215,7 +218,12 @@ rules1.append("svg:text")
   .attr("text-anchor", "middle")
   .attr("font-size", "12px")
   .attr("fill", "#bbb")
-  .text(function(d) { return (d/1000).toFixed(0)+"T"; });
+  .text(function(d) {
+    if (d >= 1000)
+      return (d/1000).toFixed(0)+"T";
+    else
+      return d;
+  });
 
 // gridlines and labels for left pyramid
 
@@ -225,9 +233,8 @@ var rules2 = vis.selectAll("g.rule2")
 .append("svg:g")
   .filter(function(d) { return d > 0; })
   .attr("class", "rule2")
-  .attr("transform", function(d) { return "translate("+(xLeft(d))+",0)";});
+  .attr("transform", function(d) { return "translate("+(xLeft(d)-20)+",0)";});
 
-/*
 rules2.append("svg:line")
   .attr("y1", h - 2)
   .attr("y2", h + 4)
@@ -238,7 +245,6 @@ rules2.append("svg:line")
   .attr("y2", h)
   .attr("stroke", "#ddd")
   .attr("stroke-opacity", .3);
-*/
 
 rules2.append("svg:text")
   .attr("y", h + 9)
@@ -246,7 +252,12 @@ rules2.append("svg:text")
   .attr("text-anchor", "middle")
   .attr("font-size", "12px")
   .attr("fill", "#bbb")
-  .text(function(d) { return (d/1000).toFixed(0)+(d==0?"":"T"); });
+  .text(function(d) {
+    if (d >= 1000)
+      return (d/1000).toFixed(0)+(d==0?"":"T");
+    else
+      return d;
+  });
 }
 
 $(document).ready(function() {
@@ -258,6 +269,7 @@ $(document).ready(function() {
       for (var age in d3.nest().key(function(d) { return d.age; }).map(allData))
         ageGroup.push(age);
 
+      ageGroupSlice = ageGroup;
       $("#ageSlider").slider({
         orientation: "vertical",
         min: 0,
