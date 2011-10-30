@@ -265,8 +265,7 @@ $(document).ready(function() {
       display(data);
   });
 
-  $("#filter input").keyup(function() {
-    var prefix = $(this).val();
+  function filterCause(prefix) {
     filteredData = allData.filter(function(d) {
       var regExp = new RegExp(prefix, "ig");
       return regExp.exec(d.cause);
@@ -274,7 +273,15 @@ $(document).ready(function() {
     if (prefix.length)
       $("#match").html(prefix);
     else
-      $("#match").html("Top causes");
+      $("#match").html("All causes");
     display(filteredData);
+  }
+  $("#filter input").keyup(function() {
+    var prefix = $(this).val();
+    filterCause(prefix);
+  });
+  $("#filter a").click(function() {
+    $("#filter input").val("");
+    filterCause("");
   });
 });
