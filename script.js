@@ -145,7 +145,7 @@ var display = function(data) {
         var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
         return "translate("+ (xLeft(pos) - 20) +",0)";
        })
-       .attr("fill", function(d, i) { return (i % 2 == 0) ? "#f39393" : "#f28282"; })
+       .attr("fill", function(d, i) { return (i % 2 == 0) ? "#f28282" : "#f39393"; })
       .attr("width", barWidth)
       .attr("height", y.rangeBand());
   });
@@ -158,7 +158,6 @@ var display = function(data) {
     .on("mouseover", function(d) {
       allbars
       .filter(function(d2) { return d.cause != d2.cause })
-      .transition()
       .attr("opacity", 0.3);
       $("#popover #cause").html(d.cause);
       $("#popover #people").html(d.people);
@@ -166,17 +165,8 @@ var display = function(data) {
                    .css("top", d3.event.y + 10)
                    .show();
      })
-    .on("mouseout", function() { allbars.transition().attr("opacity", 1); $("#popover").hide(); })
+    .on("mouseout", function() { allbars.attr("opacity", 1); $("#popover").hide(); })
     .on("click", function(d) {
-      // Transition out current bars
-      mbars.transition().duration(500).attr("width", 0);
-      fbars.transition().duration(500).attr("transform", function(d,i){
-        var currentTransform = $(this).attr("transform");
-        var xPos = parseFloat(/translate\((.*),0\)/.exec(currentTransform)[1]);
-        var width = parseFloat($(this).attr("width"));
-        return "translate("+ (xPos + width) +",0)";
-       }).attr("width", 0);
-
        $("#match").html(d.cause);
        $("#filter input").val(d.cause);
        filteredData = data.filter(function(e) { return d.cause == e.cause; });
@@ -212,12 +202,7 @@ rules1.append("svg:text")
   .attr("text-anchor", "middle")
   .attr("font-size", "12px")
   .attr("fill", "#bbb")
-  .text(function(d) {
-    if (d >= 1000)
-      return (d/1000).toFixed(0)+"T";
-    else
-      return d;
-  });
+  .text(function(d) { return d; });
 
 // gridlines and labels for left pyramid
 
@@ -246,12 +231,7 @@ rules2.append("svg:text")
   .attr("text-anchor", "middle")
   .attr("font-size", "12px")
   .attr("fill", "#bbb")
-  .text(function(d) {
-    if (d >= 1000)
-      return (d/1000).toFixed(0)+(d==0?"":"T");
-    else
-      return d;
-  });
+  .text(function(d) { return d; });
 }
 
 $(document).ready(function() {
