@@ -1,201 +1,50 @@
-
+<!DOCTYPE html>
 <html>
   <head>
-    <title>U.S. Census Population Pyramid</title>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script type="text/javascript" src="d3.min.js"></script>
-    <script type="text/javascript" src="sample.js"></script>
-    <style type="text/css">
+    <title>Bar Chart</title>
+    <link rel="stylesheet" href="lib/jquery-ui/css/smoothness/jquery-ui-1.8.10.custom.css" />
+    <link rel="stylesheet" href="css/dev.css" />
+    <link rel="stylesheet" href="style.css" />
 
-body {
-  font: 12px sans-serif;
-  margin: 0;
-  padding: 5px;
-  color: #888;
-}
-h1 {
-  padding-left: 10px;
-  margin-bottom: 2px;
-  color: #333;
-}
-.source {
-  padding-left: 10px;
-}
-.source a, .source a:hover {
-  color: #888;
-}
-.label {
-  position: absolute;
-  top: 60px;
-  left: 15px;
-  font-size: 48px;
-  font-weight: bold;
-  color: #dedede;
-}
-.break {
-  border-bottom: solid 1px #dedede;
-  margin: 10px 15px 2px 15px;
-  width: 545px;
-}
-.years, .controls {
-  padding-top: 10px;
-  padding-left: 15;
-  width: 540;
-  text-align: center;
-  font-size: 12px;
-}
-.years span, .controls span {
-  padding-left: 2px;
-  padding-right: 2px;
-}
-.years .title {
-  font-size: 13px;
-  font-variant: small-caps;
-  letter-spacing: 1;
-}
-.years a, .controls a {
-  color: #888;
-  text-decoration: none;
-}
-.years a.y1890 {
-  color: #bbb;
-}
-.years a.active {
-  color: #000;
-}
-.controls a {
-  font-variant: small-caps;
-  letter-spacing: 1;
-  text-decoration: none;
-}
-.controls a:hover {
-  color: #000;
-  text-decoration: underline;
-}
-svg {
-  shape-rendering: crispEdges;
-}
-    </style>
-  </head>
-  <body>
-  <h1>U.S. Census Population Pyramid, 1850-2000</h1>
+     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script type="text/javascript" src="slimScroll.min.js"></script>
+    <script type="text/javascript" src="d3.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.layout.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.time.js?1.29.1"></script>
+    <script type="text/javascript" src="d3.csv.js?1.29.1"></script>
+
+    <script src="jquery.mousewheel.min.js"></script>
+    <script src="lib/jquery-ui/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="jQAllRangeSliders-min.js"></script>
+
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+  <h1>Mortality in the United States</h1>
     <div class="source">
-    Source: U.S. Census &amp; Minnesota Population Center, <a href="ipums.org">ipums.org</a>.
+    Source: WHO, <a href="ipums.org">who.org</a>.
     </div>
-    <script type="text/javascript">
+  <div id="info">
+    <div class="label"><span id="year"></span> <span id="match">Top causes</span></div>
+  </div>
+  <div style="clear:both"></div>
+  <div id="filter">
+    Filter by cause: <input type="text" />
+  </div>
 
-function isYear(d) { return d.year == year; }
-function linkClass(y) { return "y"+y.toFixed(0) + (y==year?" active":""); }
-function tooltipText(d) {
-    return d3.format(",")(d.people)
-        + " " + (d.sex==1?"men":"women")
-        + " aged " + (d.age==90?"90+":d.age+"-"+(d.age+4))
-      + " in " + d.year;
-}
-function barWidth(d) { return x1(d.people); }
+  <span id="popover">
+    <div id="cause">Cancer</div>
+    <span id="people">143</span> deaths
+  </span>
 
-// Return the x-position of cause with given index
-function position(index, causes) {
-  var pos = 0;
-  for (var i = 0; i < index; i++) {
-    pos += causes[i].people;
-  }
-  return pos;
-}
-
-var data = mortality,
-    maxp = data.reduce(function(a,b) { return Math.max(a, b.stats.reduce(function(a,b) { return a+b.people; }, 0)) }, 0),
-    mdat = data.filter(function(d) { return d.sex==1; })
-               .sort(function(a,b) { return b.age - a.age; }),
-    fdat = data.filter(function(d) { return d.sex==2; })
-               .sort(function(a,b) { return b.age - a.age; });
-
-var w = 250,
-    h = 19 * 20,
-    bins = d3.range(19),
-    year = 2000,
-    y = d3.scale.ordinal().domain(bins).rangeBands([0, h], .3),
-    x1 = d3.scale.linear().domain([0, maxp]).range([0, w]),
-    x2 = d3.scale.linear().domain([-maxp, 0]).range([0, w]),
-    rf = "javascript:return false;";
-
-var label = d3.select("body")
-  .append("div")
-    .attr("class", "label")
-    .text("2000");
-
-var vis = d3.select("body")
-  .append("svg:svg")
-    .attr("width", 2*w + 40)
-    .attr("height", h + 40)
-  .append("svg:g")
-    .attr("transform", "translate(20,15)");
-
-// pyramid bar chart
-
-var bars = vis.selectAll("g.bar")
-    .data(bins)
-    .enter()
-    .append("svg:g")
-    .attr("class", "bar")
-    .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });
-
-
-bars.filter(function(d) { return d%2==0; })
-    .append("svg:text")
-    .attr("x", w+15)
-    .attr("y", y.rangeBand() - 2)
-    .attr("fill", "#888")
-    .attr("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .text(function(d) { return (90-d*5).toFixed(0); });
-
-bars.each(function(data,index) {
-  var causes = mdat.filter(isYear)                                        // filter by year
-                  .filter(function(d) { return d.age == 90 - 5 * index;}) // filter by age group
-                  .map(function(d) { return d.stats; })
-                  .reduce(function(a, b) { return a.concat(b); }, []);
-
-  var e = d3.select(this).selectAll("g.bar")
-    .data(causes)
-    .enter()
-    .append("svg:rect")
-    .attr("gender", "male")
-    .attr("fill", function(d) { return colors[d.cause]; })
-    .attr("transform", function(d,i) { return "translate("+ (w + 30 + x1(position(i, causes))) +",0)";})
-    .attr("width", barWidth)
-    .attr("height", y.rangeBand());
-});
-
-bars.each(function(data,index) {
-  var causes = fdat.filter(isYear)                                        // filter by year
-                  .filter(function(d) { return d.age == 90 - 5 * index;}) // filter by age group
-                  .map(function(d) { return d.stats; })
-                  .reduce(function(a, b) { return a.concat(b); }, []);    // flatten
-
-  d3.select(this).selectAll("g.bar")
-    .data(causes)
-    .enter()
-    .append("svg:rect")
-    .attr("gender", "female")
-    .attr("fill", function(d) { return colors[d.cause]; })
-    .attr("transform", function(d,i) { return "translate("+ x2(-position(i, causes) - d.people) +",0)";})
-    .attr("width", barWidth)
-    .attr("height", y.rangeBand());
-});
-var mbars = d3.selectAll("rect[gender='male']");
-var fbars = d3.selectAll("rect[gender='female']");
-var allbars = d3.selectAll("rect").attr("opacity", 1);
-
-allbars
-  .on("mouseover", function(d) {
-    allbars
-    .filter(function(d2) { return d.cause != d2.cause })
-    .transition()
-    .attr("opacity", 0.4);
-   })
-  .on("mouseout", function() { allbars.transition().attr("opacity", 1); });
-
-    </script>
-  </body>
+  <div id="ageAxis">
+    <div id="ageSlider"></div>
+  </div>
+  <div id="content">
+    <div id="yearAxis">
+      <div id="yearSlider"></div>
+      <div class="description">Year</div>
+    </div>
+  </div>
+</body>
 </html>
