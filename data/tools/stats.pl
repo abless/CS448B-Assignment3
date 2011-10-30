@@ -6,9 +6,15 @@ my %causes = ();
 while(<STDIN>)
 {
     chomp;
-    @line = split(/,/, $_);
-    $causes{$line[1]} += $line[4];
-#    print $line[0];
+    if ($_ =~ /(.+),(".+"),([12]),(.+),([0-9]+)/)
+    {
+        $causes{$2} += $5;
+    }
+    else
+    {
+        print "Error\n";
+    }
+
 }
 
 foreach $key (sort {$causes{$b} <=> $causes{$a} } keys %causes)

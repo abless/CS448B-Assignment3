@@ -7,15 +7,24 @@ print $line;
 while (<STDIN>)
 {
     chomp;
-    split /,/;
-    $key = $_[0].",".$_[1].",".$_[2].",".$_[3];
-    if (defined $hash{$key} && exists $hash{$key})
+    #split /,/;
+    if ($_ =~ /(.+),(".+"),([12]),(.+),([0-9]+)/)
     {
-        $hash{$key} += $_[4];
+
+#$key = $_[0].",".$_[1].",".$_[2].",".$_[3];
+        $key = $1.",".$2.",".$3.",".$4;
+        if (defined $hash{$key} && exists $hash{$key})
+        {
+            $hash{$key} += $5;
+        }
+        else
+        {
+            $hash{$key} = $5;
+        }
     }
     else
     {
-        $hash{$key} = $_[4];
+        print "Error\n";
     }
 }
 

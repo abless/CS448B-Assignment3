@@ -21,8 +21,12 @@ my @rows = ();
 while(<STDIN>)
 {
     chomp;
-    @line = split(/,/, $_);
-    push @rows, [@line];
+    #@line = split(/,/, $_);
+    #push @rows, [@line];
+    if ($_ =~ /(.+),(".+"),([12]),(.+),([0-9]+)/)
+    {
+        push @rows, [$1, $2, $3, $4, $5];
+    }
 }
 
 sub mycmp
