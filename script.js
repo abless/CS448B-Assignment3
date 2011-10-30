@@ -12,7 +12,10 @@ function oc(a)
   return o;
 }
 
-function applyAgeFilter() {
+function applyAgeFilter(data) {
+  if (data == undefined)
+    data = filteredData;
+
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
   var ages = ageGroup.slice(min, max);
@@ -33,19 +36,19 @@ function applyAgeFilter() {
       endAge = ageGroup[max - 1].split(/-/)[1];
   }
   $("#agegroup").html("from " + stargAge + " to " + endAge);
-  return filteredData.filter(function(d) { return d.age in oc(ageGroupSlice); });
+  return data.filter(function(d) { return d.age in oc(ageGroupSlice); });
 }
 
-var display = function(data) {
-  if (data == undefined)
-    data = filteredData;
+var display = function() {
+  var data = filteredData;
 
+  // Convert to integer type
   data.forEach(function(d) {
     d.people = +d.people;
     d.year = +d.year;
   });
 
-  dataYear = data.filter(function(d) { return d.year == year; });
+  dataYear = applyAgeFilter(data.filter(function(d) { return d.year == year; }));
 
   var mdataAllYear = data.filter(function(d) { return d.gender == 1; });
   var fdataAllYear = data.filter(function(d) { return d.gender == 2; });
@@ -82,24 +85,11 @@ var display = function(data) {
       fageLength[age] = 0;
   }
 
-  var causeGroup = Array();
-  var causeColor = Array();
-  var causeColorIndex = Array();
-  var numCauses = 0;
-  for (var cause in causeData)
-  {
-      causeGroup.push(cause);
-      causeColorIndex[cause] = numCauses++;
-      causeColor[cause] = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
-  }
-
   var xRight = d3.scale.linear().domain([0, maxp]).range([0, w]),
       xLeft = d3.scale.linear().domain([0, maxp]).range([w, 0]),
       y = d3.scale.ordinal().domain(ageGroup).rangeBands([0, h], .2);
 
   var barWidth = function(d) { return xRight(d.people); }
-
-
 
   d3.select("svg").remove();
   var vis = d3.select("body #content")
@@ -115,7 +105,7 @@ var display = function(data) {
       .attr("class", "bar")
       .attr("transform", function(d, i) { return "translate(0, " + y(i) + ")"; });
 
-  bars.filter(function(d,i) { return i%2 == 0;})
+  bars.filter(function(d,i) { return i % 2 == 0; })
       .append("svg:text")
       .attr("x", w+15)
       .attr("y", y.rangeBand() - 2)
@@ -133,7 +123,6 @@ var display = function(data) {
       .enter()
       .append("svg:rect")
       .attr("gender", "male")
-      //.transition().duration(500)
       .attr("transform", function(d,i) {
         var pos = mageLength[d.age]; mageLength[d.age] += d.people;
         return "translate("+ (w + xRight(pos) + 50) +",0)";
@@ -156,7 +145,7 @@ var display = function(data) {
         var pos = fageLength[d.age] + d.people; fageLength[d.age] += d.people;
         return "translate("+ (xLeft(pos) - 20) +",0)";
        })
-       .attr("fill", function(d, i) { return (i % 2 == 0) ? "#f39393" : "#f28282"; })
+       .attr("fill", function(d, i) { return (i % 2 == 0) ? "#f28282" : "#f39393"; })
       .attr("width", barWidth)
       .attr("height", y.rangeBand());
   });
@@ -169,7 +158,6 @@ var display = function(data) {
     .on("mouseover", function(d) {
       allbars
       .filter(function(d2) { return d.cause != d2.cause })
-      .transition()
       .attr("opacity", 0.3);
       $("#popover #cause").html(d.cause);
       $("#popover #people").html(d.people);
@@ -177,22 +165,25 @@ var display = function(data) {
                    .css("top", d3.event.y + 10)
                    .show();
      })
-    .on("mouseout", function() { allbars.transition().attr("opacity", 1); $("#popover").hide(); })
+    .on("mouseout", function() { allbars.attr("opacity", 1); $("#popover").hide(); })
     .on("click", function(d) {
-      // Transition out current bars
-      mbars.transition().duration(500).attr("width", 0);
-      fbars.transition().duration(500).attr("transform", function(d,i){
-        var currentTransform = $(this).attr("transform");
-        var xPos = parseFloat(/translate\((.*),0\)/.exec(currentTransform)[1]);
-        var width = parseFloat($(this).attr("width"));
-        return "translate("+ (xPos + width) +",0)";
-       }).attr("width", 0);
-
        $("#match").html(d.cause);
        $("#filter input").val(d.cause);
        filteredData = data.filter(function(e) { return d.cause == e.cause; });
        display(filteredData);
     });
+
+// age label
+vis.append("svg:text")
+    .attr("x", w+15)
+    .attr("y", 0 - 15)
+    .attr("dy", ".71em")
+    .attr("fill", "#888")
+    .attr("text-anchor", "middle")
+    .attr("font-size", "15px")
+    .attr("font-variant", "small-caps")
+    .attr("letter-spacing", 1)
+    .text("age");
 
 // gridlines and labels for right pyramid
 
@@ -223,12 +214,7 @@ rules1.append("svg:text")
   .attr("text-anchor", "middle")
   .attr("font-size", "12px")
   .attr("fill", "#bbb")
-  .text(function(d) {
-    if (d >= 1000)
-      return (d/1000).toFixed(0)+"T";
-    else
-      return d;
-  });
+  .text(function(d) { return d; });
 
 // gridlines and labels for left pyramid
 
@@ -257,12 +243,7 @@ rules2.append("svg:text")
   .attr("text-anchor", "middle")
   .attr("font-size", "12px")
   .attr("fill", "#bbb")
-  .text(function(d) {
-    if (d >= 1000)
-      return (d/1000).toFixed(0)+(d==0?"":"T");
-    else
-      return d;
-  });
+  .text(function(d) { return d; });
 }
 
 $(document).ready(function() {
@@ -292,11 +273,13 @@ $(document).ready(function() {
         value: 1999,
         slide: function(event, ui) {
          year = ui.value;
-         $("#year").html(year);
-         display();
+         if ($("#year").html != ("" + year)) {
+           $("#year").html(year);
+           display();
+         }
         }
       });
-      display(data);
+      display();
   });
 
   var autoPlayTimer = null;
@@ -352,7 +335,7 @@ $(document).ready(function() {
     else
       $("#match").html("All causes");
 
-    display(applyAgeFilter());
+    display();
   }
   $("#filter input").keyup(function() {
     var prefix = $(this).val();
