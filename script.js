@@ -1,7 +1,12 @@
+/*
+ * Copyright (C) Alexander Blessing, Yu-Ta Lu
+ */
+
 var year = 1999;
 var w = 400,
     h = 330;
 
+/* Small helper function */
 function oc(a)
 {
   var o = {};
@@ -18,10 +23,8 @@ function applyAgeFilter(data) {
 
   var min = ageGroup.length - $("#ageSlider").slider("values", 1) - 1;
   var max = ageGroup.length - $("#ageSlider").slider("values", 0);
-  var ages = ageGroup.slice(min, max);
   ageGroupSlice = ageGroup.slice(min, max);
 
-  //$("#agegroup").html("from " + ageGroup[min] + " to " + ageGroup[max-1]);
   var startAge, endAge;
   if (ageGroup[min] == "95+") {
       stargAge = "95+";
@@ -39,6 +42,7 @@ function applyAgeFilter(data) {
   return data.filter(function(d) { return d.age in oc(ageGroupSlice); });
 }
 
+/* Display current data */
 var display = function() {
   var data = filteredData;
 
@@ -53,21 +57,16 @@ var display = function() {
   var mdataAllYear = data.filter(function(d) { return d.gender == 1; });
   var fdataAllYear = data.filter(function(d) { return d.gender == 2; });
 
-  // gender: 1 male 2 female
+  // gender: 1 male, 2 female
    var mdata = dataYear.filter(function(d) { return d.gender == 1; });
    var fdata = dataYear.filter(function(d) { return d.gender == 2; });
-  //var mdata = mdataAllYear.filter(function(d) { return d.year == year; });
-  //var fdata = fdataAllYear.filter(function(d) { return d.year == year; });
 
   causeData = d3.nest().key(function(d) { return d.cause; }).map(dataYear);
   var ageData = d3.nest().key(function(d) { return d.age; }).map(dataYear);
-  //causeData = d3.nest().key(function(d) { return d.cause; }).map(data);
-  //var ageData = d3.nest().key(function(d) { return d.age; }).map(data);
 
   // Calculate max # of people for scale
   var maxp = 0;
   for (var currentYear = 1999; currentYear <= 2005; currentYear ++) {
-  //for (var currentYear = year; currentYear <= year; currentYear ++) {
       for (var age in ageData) {
         for (var gender = 1; gender <= 2; gender ++) {
             var allData = data.filter(function(d) { return d.year == currentYear; })
@@ -78,6 +77,7 @@ var display = function() {
       }
   }
 
+  // Helper variables used to encode position of stacked bars
   var mageLength = Array();
   var fageLength = Array();
   for (var age in ageData)
@@ -151,8 +151,6 @@ var display = function() {
       .attr("height", y.rangeBand());
   });
 
-  var mbars = d3.selectAll("rect[gender='male']");
-  var fbars = d3.selectAll("rect[gender='female']");
   var allbars = d3.selectAll("rect").attr("opacity", 1);
 
   allbars
@@ -162,6 +160,8 @@ var display = function() {
       .attr("opacity", 0.3);
       $("#popover #cause").html(d.cause);
       $("#popover #people").html(d.people);
+      $("#popover #age").html(d.age);
+      $("#popover #gender").html((d.gender == "1") ? "male" : "female");
       $("#popover").css("left", d3.event.x)
                    .css("top", d3.event.y + 10)
                    .show();
@@ -174,7 +174,7 @@ var display = function() {
        display(filteredData);
     });
 
-// age label
+// Display age label
 vis.append("svg:text")
     .attr("x", w+15)
     .attr("y", 0 - 15)
@@ -186,7 +186,7 @@ vis.append("svg:text")
     .attr("letter-spacing", 1)
     .text("age");
 
-// gridlines and labels for right pyramid
+// Show gridlines for right graph
 
 var rules1 = vis.selectAll("g.rule1")
   .data(xRight.ticks(5))
@@ -208,7 +208,6 @@ rules1.append("svg:line")
   .attr("stroke", "#ddd")
   .attr("stroke-opacity", .3);
 
-
 rules1.append("svg:text")
   .attr("y", h + 9)
   .attr("dy", ".71em")
@@ -217,7 +216,7 @@ rules1.append("svg:text")
   .attr("fill", "#bbb")
   .text(function(d) { return d; });
 
-// gridlines and labels for left pyramid
+// Show gridlines for left graph
 
 var rules2 = vis.selectAll("g.rule2")
   .data(xLeft.ticks(5))
@@ -247,9 +246,73 @@ rules2.append("svg:text")
   .text(function(d) { return d; });
 }
 
+var autoPlayTimer = null;
+function startAutoPlay()
+{
+    $("#btnPlay").html("Stop Auto Play");
+    year = 1999;
+    if (!autoPlayTimer)
+    {
+      function showNextYearData() {
+        $("#year").html(year);
+        $("#yearSlider").slider("value", year);
+        display(applyAgeFilter());
+
+        if (year == 2005) {
+          stopAutoPlay();
+        }
+        else {
+          year ++;
+        }
+      }
+      showNextYearData();  // Execute for the first time when clicked
+      autoPlayTimer = setInterval(showNextYearData, 500);  // Set the timer to make it execute automatically
+    }
+}
+function stopAutoPlay() {
+    if (autoPlayTimer) {
+      $("#btnPlay").html("Auto Play");
+      clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+}
+
+function filterCause(prefix) {
+  filteredData = allData.filter(function(d) {
+    var regExp = new RegExp(prefix, "ig");
+    return regExp.exec(d.cause);
+  });
+  if (prefix.length)
+    $("#match").html(prefix);
+  else
+    $("#match").html("All causes");
+
+  display();
+}
+
 $(document).ready(function() {
   $("#year").html(year);
 
+  $("#btnPlay").click(function() {
+      if (autoPlayTimer) {
+        stopAutoPlay();
+      }
+      else {
+        startAutoPlay();
+      }
+  });
+
+  $("#filter input").keyup(function() {
+    var prefix = $(this).val();
+    filterCause(prefix);
+  });
+
+  $("#filter a").click(function() {
+    $("#filter input").val("");
+    filterCause("");
+  });
+
+  // Load the data, do some initial data transformation, and display the visualization
   d3.csv("data/all.ranksorted.csv", function(data) {
       allData = filteredData = data;
       ageGroup = [];
@@ -281,69 +344,5 @@ $(document).ready(function() {
         }
       });
       display();
-  });
-
-  var autoPlayTimer = null;
-
-  function startAutoPlay()
-  {
-      $("#btnPlay").html("Stop Auto Play");
-      year = 1999;
-      if (!autoPlayTimer)
-      {
-        function showNextYearData() {
-          $("#year").html(year);
-          $("#yearSlider").slider("value", year);
-          display(applyAgeFilter());
-
-          if (year == 2005) {
-            stopAutoPlay();
-          }
-          else {
-            year ++;
-          }
-        }
-        // Execute for the first time when clicked
-        showNextYearData();
-        // Set the timer to make it execute automatically
-        autoPlayTimer = setInterval(showNextYearData, 500);
-      }
-  }
-  function stopAutoPlay() {
-      if (autoPlayTimer) {
-        $("#btnPlay").html("Auto Play");
-        clearInterval(autoPlayTimer);
-        autoPlayTimer = null;
-      }
-  }
-
-  $("#btnPlay").click(function() {
-      if (autoPlayTimer) {
-        stopAutoPlay();
-      }
-      else {
-        startAutoPlay();
-      }
-  });
-
-  function filterCause(prefix) {
-    filteredData = allData.filter(function(d) {
-      var regExp = new RegExp(prefix, "ig");
-      return regExp.exec(d.cause);
-    });
-    if (prefix.length)
-      $("#match").html(prefix);
-    else
-      $("#match").html("All causes");
-
-    display();
-  }
-  $("#filter input").keyup(function() {
-    var prefix = $(this).val();
-    filterCause(prefix);
-  });
-  $("#filter a").click(function() {
-    $("#filter input").val("");
-    filterCause("");
   });
 });

@@ -1,4 +1,3 @@
-
 body {
   font: 12px sans-serif;
   margin: 0;
@@ -13,9 +12,11 @@ h1 {
 .source {
   padding-left: 10px;
 }
+
 .source a, .source a:hover {
   color: #888;
 }
+
 .label {
   font-size: 25px;
   font-weight: bold;
@@ -23,46 +24,6 @@ h1 {
   float: left;
 }
 
-.break {
-  border-bottom: solid 1px #dedede;
-  margin: 10px 15px 2px 15px;
-  width: 545px;
-}
-.years, .controls {
-  padding-top: 10px;
-  padding-left: 15;
-  width: 540;
-  text-align: center;
-  font-size: 12px;
-}
-.years span, .controls span {
-  padding-left: 2px;
-  padding-right: 2px;
-}
-.years .title {
-  font-size: 13px;
-  font-variant: small-caps;
-  letter-spacing: 1;
-}
-.years a, .controls a {
-  color: #888;
-  text-decoration: none;
-}
-.years a.y1890 {
-  color: #bbb;
-}
-.years a.active {
-  color: #000;
-}
-.controls a {
-  font-variant: small-caps;
-  letter-spacing: 1;
-  text-decoration: none;
-}
-.controls a:hover {
-  color: #000;
-  text-decoration: underline;
-}
 svg {
   shape-rendering: crispEdges;
 }
