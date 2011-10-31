@@ -17,7 +17,7 @@ h1 {
   color: #888;
 }
 .label {
-  font-size: 48px;
+  font-size: 25px;
   font-weight: bold;
   color: #dedede;
   float: left;
@@ -65,6 +65,15 @@ h1 {
 }
 svg {
   shape-rendering: crispEdges;
+}
+
+#info {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+#filter {
+  margin-left: 10px;
 }
 
 #popover {
