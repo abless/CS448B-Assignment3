@@ -28,6 +28,10 @@ svg {
   shape-rendering: crispEdges;
 }
 
+svg rect {
+  cursor: pointer;
+}
+
 #info {
   margin-left: 10px;
   margin-top: 10px;
