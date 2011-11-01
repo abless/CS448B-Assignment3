@@ -313,7 +313,7 @@ $(document).ready(function() {
   });
 
   // Load the data, do some initial data transformation, and display the visualization
-  d3.csv("data/all.ranksorted.csv", function(data) {
+  d3.csv("all.ranksorted.csv", function(data) {
       allData = filteredData = data;
       ageGroup = [];
       for (var age in d3.nest().key(function(d) { return d.age; }).map(allData))
